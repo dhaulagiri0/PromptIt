@@ -11,7 +11,6 @@
   <div class="
     border-black
     hover:drop-shadow-solid-grey
-    hover:bg-richgrey
     overflow-hidden
     drop-shadow-solid
     px-2 
