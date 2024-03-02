@@ -2,7 +2,8 @@
 </script>
 
 <template>
-  <div class="bg-slate-900">
+  <div class="bg-slate-900 h-dvh p-5">
+    <Header />
     <UserNormal />
     <UserLobby />
     <WindowCard headerColor="grapefruit">
