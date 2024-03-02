@@ -1,6 +1,3 @@
-<script setup>
-</script>
-
 <template>
   <div class="bg-slate-900 h-dvh p-5 grid content-center">
     <!-- <Header /> -->
@@ -37,3 +34,6 @@
     <Footer class="h-16 inset-x-0 fixed bottom-0"/>
   </div>
 </template>
+
+<script setup lang="ts">
+</script>
