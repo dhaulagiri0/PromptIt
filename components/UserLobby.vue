@@ -26,5 +26,18 @@
     <div class="flex-1">
       <ConsoleDisplay :text="text"/>
     </div>
+    <div class="flex-1">
+      <button class="
+        bg-richred
+        rounded-vl
+        border-4
+        border-black
+        overflow-hidden
+        drop-shadow-solid
+        p-3
+      ">
+        <IconsCross />
+      </button>
+    </div>
   </div>
 </template>

@@ -9,7 +9,7 @@ module.exports = {
   ],
   theme: {
     borderRadius: {
-      'vl' : '1rem',
+      'vl' : '0.7rem',
     },
     extend: {
       fontFamily: {
@@ -18,11 +18,18 @@ module.exports = {
       colors: {
         'grapefruit': '#EBA166',
         'offwhite': '#EAE1D8',
+        'richgrey': '#83787A',
+        'richred': '#C9373D',
       },
       dropShadow: {
         'solid': '-5px 5px 0px rgba(0, 0, 0, 1.0)',
+        'solid-white': '-5px 5px 0px rgba(255, 255, 255, 1.0)',
+        'solid-grey': '-2px 2px 0px rgba(0, 0, 0, 1.0)',
       },
     },
   },
+  safelist: [
+    {pattern: /(bg|text|border)-./},
+  ],
   plugins: [],
 }

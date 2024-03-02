@@ -1,7 +1,15 @@
-<script setup></script>
+<script setup>  
+  const props = defineProps({
+    'pfp': {
+      type: String,
+      default: "user-icon.svg",
+    },
+  });
 
+</script>
 <template>
   <img class="
+    image
     border-white
     border-4
     bg-grapefruit
@@ -10,7 +18,7 @@
     aspect-square
     overflow-hidden
     "
-    src="~/assets/images/user-icon.svg"
-  >
+    :src="`/_nuxt/assets/images/${props.pfp}`"
+   >
   </img>
 </template>
