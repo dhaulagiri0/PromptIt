@@ -3,8 +3,7 @@
 
 <template>
   <div class="bg-slate-900">
-    <h3>Welcome to DnDAI</h3>
-    <User />
+    <UserNormal />
     <UserLobby />
     <WindowCard headerColor="grapefruit">
       <ConsoleDisplay text="test display text"/>
