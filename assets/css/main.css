@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@font-face {
+    font-family: 'Gohu';
+    font-style: normal;
+    src: url('/assets/fonts/Gohu.ttf')  format('truetype');
+}
