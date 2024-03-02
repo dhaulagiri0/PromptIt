@@ -4,6 +4,10 @@
       type: String, 
       default: 'Placeholder',
     },
+    "shadow": {
+      type: Boolean,
+      default: false,
+    },
   })
 </script>
 
@@ -21,6 +25,7 @@
     font-gohu
     text-xl
     "
+    :class="[shadow ? 'drop-shadow-solid' : '']"
     :placeholder="placeholderText" 
     >
   </input>

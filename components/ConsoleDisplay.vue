@@ -4,7 +4,11 @@
       type: String,
       default: "Display Text",
     },
-  })
+    "shadow": {
+      type: Boolean,
+      default: false,
+    },
+  });
 </script>
 
 <template>
@@ -21,6 +25,7 @@
     font-gohu
     text-xl
     "
+    :class="[shadow ? 'drop-shadow-solid' : '']"
     >
     <h3>{{ text }}</h3>
   </div>
