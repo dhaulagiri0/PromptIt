@@ -10,7 +10,7 @@
       <p>{{ message }}</p>
     </div>
     <form @submit.prevent="handleSendMessage">
-      <input v-model="newMessage" :key="newMessage" />
+      <input v-model="newMessage"/>
       <button type="submit">Send</button>
     </form>
   </div>
