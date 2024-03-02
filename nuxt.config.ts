@@ -57,7 +57,7 @@ export default defineNuxtConfig({
         pages.splice(pages.indexOf(page), 1);
       });
     }
-  },
+  }
   // app: {
   //   head: {
   //     link: [
