@@ -1,0 +1,12 @@
+<script setup>
+  const props = defineProps({
+    "color": {
+      default: "white"
+    }
+  })
+</script>
+<template>
+    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M55 60L55 55C60.515 55 65 50.515 65 45C65 39.485 60.515 35 55 35L25 35L25 47.5L10 32.5L25 17.5L25 30L55 30C63.2725 30 70 36.7275 70 45C70 53.2725 63.2725 60 55 60Z" :fill="color"/>
+    </svg>   
+</template> 

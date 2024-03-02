@@ -11,20 +11,29 @@ export default {
     './error.vue'
   ],
   theme: {
+    borderRadius: {
+      'vl' : '0.7rem',
+    },
     extend: {
-      colors: {
-        primary: '#000000',
-        secondary: '#000000',
-        accent: '#000000'
-      },
       fontFamily: {
+        gohu: ['Gohu', ],
       },
-      content: {
-        blank: '""'
+      colors: {
+        'grapefruit': '#EBA166',
+        'offwhite': '#EAE1D8',
+        'richgrey': '#83787A',
+        'richred': '#C9373D',
+        'richblue': '#368DBF',
       },
-      backgroundImage: {
-      }
-    }
+      dropShadow: {
+        'solid': '-5px 5px 0px rgba(0, 0, 0, 1.0)',
+        'solid-white': '-5px 5px 0px rgba(255, 255, 255, 1.0)',
+        'solid-grey': '-2px 2px 0px rgba(0, 0, 0, 1.0)',
+      },
+    },
   },
-  plugins: []
-};
+  safelist: [
+    {pattern: /(bg|text|border)-./},
+  ],
+  plugins: [],
+}
