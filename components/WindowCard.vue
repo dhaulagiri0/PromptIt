@@ -33,7 +33,7 @@
         <IconsDash class="inline"/>
         <IconsCross class="inline"/>
       </div>
-      <div class="content-container p-4">
+      <div class="space-y-3 content-container p-4">
         <slot />
       </div>
     </div>
