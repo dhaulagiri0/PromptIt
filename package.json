@@ -21,6 +21,6 @@
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "@nuxt/devtools": "latest",
-    "nuxt": "^3.9.0",
+    "nuxt": "^3.9.0"
   }
 }
