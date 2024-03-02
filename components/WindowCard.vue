@@ -1,4 +1,11 @@
-<script setup></script>
+<script setup>
+  const props = defineProps({
+    'headerColor': {
+      type: String, 
+      default: 'grapefruit',
+    },
+  })
+</script>
 
 <template>
   <div class="
@@ -8,18 +15,23 @@
     rounded-vl
     w-max 
     border-4
-    bg-offwhite
+    bg-offwhite 
     border-black
     overflow-hidden
-    drop-shadow-solid"
-  >
+    drop-shadow-solid
+  ">
     <div class="block">
-      <div class="header space-x-4 text-right p-2 border-b-4 border-black bg-grapefruit">
-        <img class="inline text-l" src="/assets/svgs/ui-circle.svg"/>
-        <img class="inline text-l" src="/assets/svgs/ui-dash.svg"/>
-        <img class="inline text-l" src="/assets/svgs/ui-x.svg"/>
-        <!-- <span class="text-3xl">minus </span> -->
-        <!-- <span class="text-3xl">cross</span> -->
+      <div class="
+        header 
+        space-x-4 
+        text-right 
+        p-2 
+        border-b-4 
+        border-black 
+        " :class="['bg-' + headerColor]"> 
+        <IconsCircle class="inline"/>
+        <IconsDash class="inline"/>
+        <IconsCross class="inline"/>
       </div>
       <div class="content-container p-4">
         <slot />
