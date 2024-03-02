@@ -24,6 +24,7 @@
     text-offwhite
     font-gohu
     text-xl
+    w-full
     "
     :class="[shadow ? 'drop-shadow-solid' : '']"
     :placeholder="placeholderText" 
