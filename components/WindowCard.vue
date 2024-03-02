@@ -13,7 +13,6 @@
     mx-auto 
     main-container 
     rounded-vl
-    w-max 
     border-4
     bg-offwhite 
     border-black

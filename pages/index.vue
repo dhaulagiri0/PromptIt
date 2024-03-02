@@ -4,17 +4,21 @@
 <template>
   <div class="bg-slate-900 h-dvh p-5">
     <Header />
-    <UserNormal />
-    <UserLobby />
-    <WindowCard headerColor="grapefruit">
-      <ConsoleDisplay text="test display text"/>
-      <ConsoleField />
-      <ThiccButton color="grapefruit">
-        <h3>Join a game</h3>
-      </ThiccButton>
-      <ThiccButton color="offwhite">
-        <h3>Start a new game</h3>
-      </ThiccButton>
-    </WindowCard>
+    <div class="main-content flex space-x-10 ml-28 mr-28">
+      <div class="left flex-1 p-4">
+        <WindowCard class="w-fill" header-color="richblue">
+          <div class="p-10">
+            <IconsMainLogo class="w-fill min-w-20" />
+          </div>
+        </WindowCard> 
+      </div>
+      <div class="right flex-none p-4">
+        <WindowCard class="">
+          <ConsoleField place/>
+          <ThiccButton />
+          <ThiccButton />
+        </WindowCard>
+      </div>
+    </div>
   </div>
 </template>

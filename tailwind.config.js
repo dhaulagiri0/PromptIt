@@ -20,6 +20,7 @@ module.exports = {
         'offwhite': '#EAE1D8',
         'richgrey': '#83787A',
         'richred': '#C9373D',
+        'richblue': '#368DBF',
       },
       dropShadow: {
         'solid': '-5px 5px 0px rgba(0, 0, 0, 1.0)',
