@@ -8,6 +8,7 @@
       type: Boolean,
       default: false,
     },
+    "type": String,
   })
 </script>
 
@@ -26,6 +27,7 @@
     text-xl
     w-full
     "
+    :type="type"
     :class="[shadow ? 'drop-shadow-solid' : '']"
     :placeholder="placeholderText" 
     >

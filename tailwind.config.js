@@ -16,15 +16,16 @@ export default {
     },
     extend: {
       fontFamily: {
-        gohu: ['Gohu', ],
+        gohu: ['Gohu'],
       },
       colors: {
         'grapefruit': '#EBA166',
-        'offwhite': '#EAE1D8',
+        'offwhite': '#d9d9d9',
         'richgrey': '#83787A',
         'richred': '#C9373D',
         'richblue': '#368DBF',
         'darkergrey': '#2D2D2D',
+        'richpink': "#F09296"
       },
       dropShadow: {
         'solid': '-5px 5px 0px rgba(0, 0, 0, 1.0)',

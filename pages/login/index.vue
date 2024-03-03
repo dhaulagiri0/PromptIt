@@ -1,31 +1,62 @@
 <template>
   <div
-    id="login">
-    <form class="flex flex-col w-1/2 text-white" @submit.prevent="handleLogin">
-      <input
-        type="email"
-        class= "bg-black mt-2 p-2 rounded-md"
-        v-model="credentials.email"
-        placeholder="Email_"
-        required />
-      <input
-        type="password"
-        class= "bg-black mt-2 p-2 rounded-md"
-        v-model="credentials.password"
-        placeholder="Password_"
-        required />
-      <button
-        type="submit"
-        class="bg-black mt-2 p-2 rounded-md">
-        Log In
-      </button>
-    </form>
-
+    id="login"
+    class="bg-gradient-to-tr from-richpink to-richblue h-screen font-gohu overflow-x-hidden flex flex-col">
+    <Header />
+    <main class="grow flex items-center">
+      <WindowCard class="place-items-center max-w-96">
+        <form class="flex flex-col text-white mx-4" @submit.prevent="handleLogin">
+          <input class="
+            border-white
+            mt-2
+            rounded-vl
+            overflow-hidden
+            p-3
+            px-5
+            bg-black
+            border-4
+            text-offwhite
+            text-xl
+            w-full
+            "
+            type="email"
+            v-model="credentials.email"
+            placeholder="Email_"
+            required
+            />
+          <input class="
+            border-white
+            rounded-vl
+            mt-4
+            overflow-hidden
+            p-3
+            px-5
+            bg-black
+            border-4
+            text-offwhite
+            text-xl
+            w-full
+            "
+            type="password"
+            v-model="credentials.password"
+            placeholder="Password_"
+            required
+            />
+          <ThiccButton class="mt-4 w-full bg-white text-black cursor-pointer" type="submit" @click="handleLogin">
+            <h3>Login</h3>
+          </ThiccButton>
+          <ThiccButton class="mt-4 w-full bg-white text-black cursor-pointer" type="submit" @click="handleLoginWithGoogle">
+            <h3>Login with Google</h3>
+          </ThiccButton>
+        </form>
+      </WindowCard>
+    </main>
+    <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
-const { logInUser, sendResetEmail } = useAuth()
+const { logInUser, logInUserWithGoogle, sendResetEmail } = useAuth()
 const router = useRouter()
 
 const credentials = reactive({
@@ -41,6 +72,18 @@ async function handleLogin() {
     return;
   }
   logInUser(credentials.email, credentials.password)
+    .then((user) => {
+      console.log("User logged in: ", user);
+      router.push('/');
+    })
+    .catch((e: any) => {
+      console.error(e);
+    });
+}
+
+async function handleLoginWithGoogle() {
+  console.log("Handling log in with Google");
+  logInUserWithGoogle()
     .then((user) => {
       console.log("User logged in: ", user);
       router.push('/');

@@ -1,11 +1,7 @@
 <template>
-  <div>
+  <div 
+    class="font-gohu">
     <h1>Chat</h1>
-    <!-- <ul>
-      <li v-for="message in allMessages" :key="allMessages">
-        {{ message.value }}
-      </li>
-    </ul> -->
     <div v-for="message in allMessages" :key="message">
       <p>{{ message }}</p>
     </div>
