@@ -45,7 +45,7 @@ export default function() {
       if (game) {
         callback(game as Game);
       }
-    }
+    });
   }
 
   return {
