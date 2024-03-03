@@ -4,6 +4,10 @@
       type: String, 
       default: 'grapefruit',
     },
+    'headerText': {
+      type: String, 
+      default: '',
+    },
   })
 </script>
 
@@ -21,16 +25,21 @@
   ">
     <div class="block">
       <div class="
+        flex
         header 
         space-x-4 
-        text-right 
         p-2 
         border-b-4 
         border-black 
         " :class="['bg-' + headerColor]"> 
-        <IconsCircle class="inline"/>
-        <IconsDash class="inline"/>
-        <IconsCross class="inline"/>
+        <div class="flex-1 inline text-left items-baseline h-fill pl-2">
+          <p class="font-gohu text-2xl">{{ props.headerText }}</p>
+        </div>
+        <div class="flex-1 w-fill inline text-right space-x-2">
+          <IconsCircle class="inline"/>
+          <IconsDash class="inline"/>
+          <IconsCross class="inline"/>
+        </div>
       </div>
       <div class="space-y-3 content-container p-4">
         <slot />
