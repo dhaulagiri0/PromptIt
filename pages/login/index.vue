@@ -110,5 +110,4 @@ async function handleLoginWithGoogle() {
       console.error(e);
     });
 }
-}
 </script>
