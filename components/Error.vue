@@ -5,20 +5,33 @@
       default: 'You done fucked up boy!',
     },
   })
+
+  const show = ref(true)
+
+  function setShow() {
+      show.value = false
+  }
 </script>
 
 <template>
-  <div class="
-    container 
-    mx-auto 
-    main-container 
+  <div
+    v-if="show" 
+    id="popup-error"
+    class=" 
+    z-40
+    overflow-y-auto 
+    overflow-x-hidden 
+    absolute 
+    bottom-20 
+    left-0
+    max-h-fit
     rounded-vl
     border-4
     bg-darkergrey 
     border-black
     overflow-hidden
+    max-w-fit
     drop-shadow-solid
-    max-w-72
     font-gohu
   ">
     <div class="block">
@@ -35,9 +48,15 @@
           <p class="text-2xl">Error!</p>
         </div>
         <div class="flex-1 w-fill inline text-right space-x-2">
-          <IconsCircle class="inline"/>
-          <IconsDash class="inline"/>
-          <IconsCross class="inline"/>
+          <button class="inline" data-modal-hide="popup-error"  type="button" @click="setShow()">
+            <IconsCircle />
+          </button>
+          <button class="inline" data-modal-hide="popup-error"  type="button" @click="setShow()">
+            <IconsDash />
+          </button>
+          <button class="inline" data-modal-hide="popup-error"  type="button" @click="setShow()">
+            <IconsCross />
+          </button>
         </div>
       </div>
       <div class="space-y-3 content-container p-4">
