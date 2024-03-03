@@ -18,6 +18,7 @@ export default function() {
     const nuxtApp = useNuxtApp();
     const db = nuxtApp.$firestore;
 
+    // clears general and indiv tasks
     async function clearTasks(
         gameId: string,
     ){
@@ -36,7 +37,10 @@ export default function() {
         }
     };
 
-    function  pickRandomTasks(arr: any[], n): {} {
+    // pick n tasks from a given array of tasks
+    // and converts them into a dictionary of
+    // task ids to tasks
+    function  pickRandomTasks(arr: any[], n: number): {} {
         const shuffled = Array.from(arr).sort(() => 0.5 - Math.random());
         var selected;
         if (n <= arr.length){
@@ -102,7 +106,7 @@ export default function() {
     // firebase to the given player for given game
     async function addGeneralTasks(
         gameId: string,
-        numTasks: Number = 5,
+        numTasks: number = 5,
     ) {
         const docRef = doc(db, "games", gameId)
         const generalTasks = (await retrieveTasks())["general"]["tasks"];
@@ -122,7 +126,7 @@ export default function() {
     async function addIndividualTask(
         gameId: string, 
         playerId: string,
-        numTasks: Number = 5,
+        numTasks: number = 5,
     ) {    
         const indivTasks = (await retrieveTasks())["individual"]["tasks"];
         const selectedTasks = pickRandomTasks(indivTasks, numTasks)
