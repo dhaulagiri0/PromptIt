@@ -21,16 +21,19 @@
             <ThiccButton color="offwhite"  @click="handleCreateGame">
               <h3>Start a Game</h3>
             </ThiccButton>
+            <div v-if="showError" class="text-center">
+              <h3>{{ errorMessage }}</h3>
+            </div>
           </div>
         </WindowCard>
-        <div v-if="user == null" class="flex p-10 min-w-[100px]">
-              <button class="flex-1 basis-2/5 text-offwhite text-2xl text-right" @click="router.push('/login')">Login</button>
-              <p class="flex-1 basis-1/5 text-offwhite text-2xl text-center">|</p>
-              <button class="flex-1 basis-2/5 text-offwhite text-2xl text-left" @click="router.push('/signup')">Sign Up</button>
+        <div v-if="user == null" class="flex p-11 min-w-[100px]">
+              <button class="flex-2 basis-2/5 text-offwhite text-2xl text-right" @click="router.push('/login')">Login</button>
+              <p class="flex-2 basis-1/5 text-offwhite text-2xl text-center">|</p>
+              <button class="flex-2 basis-2/5 text-offwhite text-2xl text-left" @click="router.push('/signup')">Sign Up</button>
         </div>
       </div>
     </div>
-    <Footer class="h-16 inset-x-0 fixed bottom-0"/>
+    <Footer class="h-17 inset-x-0 fixed bottom-0"/>
   </div>
 </template>
 
@@ -40,6 +43,8 @@ const { createGame } = useLobby()
 const { getCurrentUser } = useAuth();
 import { type User } from 'firebase/auth';
 const user = ref<User | null>(null);
+const showError = ref(false)
+const errorMessage = ref<string>("Error 404")
 
 onBeforeMount(async () => {
   const _user = await getCurrentUser()
@@ -51,6 +56,8 @@ onBeforeMount(async () => {
 const handleCreateGame = async () => {
   const _user = await getCurrentUser()
   if (!_user) {
+    showError.value=true;
+    errorMessage.value = "You must be logged in to create a game"
     return console.log("You must be logged in to create a game")
   }
   user.value = _user

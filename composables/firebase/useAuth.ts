@@ -89,6 +89,7 @@ export default function() {
     sendResetEmail,
     logout,
     logInUser,
+    validatePassword,
     logInUserWithGoogle,
     createUser,
     getCurrentUser

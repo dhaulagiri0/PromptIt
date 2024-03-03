@@ -43,11 +43,14 @@
             required
             />
           <ThiccButton class="mt-4 w-full bg-white text-black cursor-pointer" type="submit" @click="handleSignUp">
-            <h3>Login</h3>
+            <h3>Sign Up</h3>
           </ThiccButton>
           <ThiccButton class="mt-4 w-full bg-white text-black cursor-pointer" type="submit" @click="handleLoginWithGoogle">
             <h3>Login with Google</h3>
           </ThiccButton>
+          <div v-if="showError" class="text-center mt-4 text-black">
+            <h3>{{ errorMessage }}</h3>
+          </div>
         </form>
       </WindowCard>
       <div class="mt-4 text-xl text-white text-center cursor-pointer" @click='router.push("/login")'>
@@ -60,8 +63,11 @@
 
 
 <script setup lang="ts">
-const { createUser, logInUserWithGoogle, sendResetEmail } = useAuth()
+const { createUser, validatePassword, logInUserWithGoogle, sendResetEmail } = useAuth()
 const router = useRouter()
+
+const showError = ref(false)
+const errorMessage = ref<string>("")
 
 const credentials = reactive({
   email: '',
@@ -69,22 +75,33 @@ const credentials = reactive({
 })
 
 async function handleSignUp() {
-  console.log("Handling sign up");
+  showError.value = false;
   console.log("Email: ", credentials.email, " Password: ", credentials.password);
   if (!credentials.email || !credentials.password) {
-    console.log('Please fill in all fields');
+    showError.value = true;
+    errorMessage.value = "Please enter an email and password";
+  }
+  if (!validatePassword(credentials.password)) {
+    showError.value = true;
+    errorMessage.value = "Password must have uppercaee, lowercase, number, and be at least 8 characters long";
     return;
   }
   let user: User | undefined;
   try {
-    user = createUser(credentials.email, credentials.password);
+    user = await createUser(credentials.email, credentials.password);
+    if (user) {
+      router.push('/');
+    }
   } catch (e: any) {
     if (e.message == 'Firebase: Error (auth/email-already-in-use).') {
-      console.log('Email already in use');
+      errorMessage.value = "Email already in use";
     } else {
+      errorMessage.value = e.message;
       console.error(e);
     }
+    showError.value = true;
   }
+  console.log(showError.value);
 }
 
 async function handleLoginWithGoogle() {

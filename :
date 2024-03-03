@@ -48,8 +48,8 @@
           <ThiccButton class="mt-4 w-full bg-white text-black cursor-pointer" type="submit" @click="handleLoginWithGoogle">
             <h3>Login with Google</h3>
           </ThiccButton>
-          <div v-if="showError" class="text-center mt-4 text-black">
-            <h3>{{ errorMessage }}</h3>
+          <div v-if="showError.value" class="text-center mt-4 text-black">
+            <h3>{{ errorMessage.value }}</h3>
           </div>
         </form>
       </WindowCard>
@@ -79,7 +79,7 @@ async function handleLogin() {
   showError.value = false;
   console.log("Email: ", credentials.email, " Password: ", credentials.password);
   if (!credentials.email || !credentials.password) {
-    errorMessage.value = "Please enter an email and password"
+    errorMessage.value = "Please enter a valid email and password"
     showError.value = true;
     return;
   }
@@ -89,13 +89,7 @@ async function handleLogin() {
       router.push('/');
     })
     .catch((e: any) => {
-      // if (e.value.includes(auth/user-not-found")) {
-      if (e.message == "Firebase: Error (auth/invalid-credential).") {
-        errorMessage.value = "Invalid credentials"
-      } else {
-        errorMessage.value = e.message
-      }
-      showError.value = true;
+      console.error(e);
     });
 }
 
