@@ -14,10 +14,8 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
-  modules: [
-    '@pinia/nuxt', // needed
-    '@pinia-plugin-persistedstate/nuxt',
-  ],
+  modules: [// needed
+  '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt', "@nuxt/image"],
   components: [
     '~/components',
     {
