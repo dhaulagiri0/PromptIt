@@ -2,7 +2,7 @@
   <div
     id="login"
     class="bg-gradient-to-tr from-richpink to-richblue h-screen font-gohu overflow-x-hidden flex flex-col">
-    <Header />
+    <Header class="absolute"/>
     <main class="grow flex flex-col justify-center">
       <WindowCard class="place-items-center max-w-96">
         <form class="flex flex-col text-white mx-4" @submit.prevent="handleLogin">
