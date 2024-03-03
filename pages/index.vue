@@ -36,4 +36,6 @@
 </template>
 
 <script setup lang="ts">
+  const { getCurrentUser } = useAuth();
+  console.log(getCurrentUser().value)
 </script>
