@@ -115,16 +115,4 @@ async function handleLoginWithGoogle() {
       console.error(e);
     });
 }
-
-async function handleLoginWithGoogle() {
-  console.log("Handling log in with Google");
-  logInUserWithGoogle()
-    .then((user) => {
-      console.log("User logged in: ", user);
-      router.push('/');
-    })
-    .catch((e: any) => {
-      console.error(e);
-    });
-}
 </script>
