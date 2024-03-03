@@ -9,12 +9,32 @@ import {
     orderBy,
     type Unsubscribe,
     Firestore,
+    updateDoc,
+    deleteField,
     setDoc
 } from 'firebase/firestore'
 
 export default function() {
     const nuxtApp = useNuxtApp();
     const db = nuxtApp.$firestore;
+
+    async function clearTasks(
+        gameId: string,
+    ){
+        const docRef = doc(db, "games", gameId)
+        const docSnap = checkGame(gameId)
+
+        if (docSnap != null) {
+            await updateDoc(docRef, {
+                generalTasks: deleteField()
+            });
+            await updateDoc(docRef, {
+                indivTasks: deleteField()
+            });
+        } else {
+            console.log("you done fucked up boy")
+        }
+    };
 
     function  pickRandomTasks(arr: any[], n): {} {
         const shuffled = Array.from(arr).sort(() => 0.5 - Math.random());
@@ -120,6 +140,7 @@ export default function() {
     }
 
     return {
+        clearTasks,
         addIndividualTask,
         retrievePlayers,
         addGeneralTasks,
