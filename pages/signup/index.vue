@@ -3,7 +3,7 @@
     id="login"
     class="bg-gradient-to-tr from-richpink to-richblue h-screen font-gohu overflow-x-hidden flex flex-col">
     <Header />
-    <main class="grow flex items-center">
+    <main class="grow flex flex-col justify-center">
       <WindowCard class="place-items-center max-w-96">
         <form class="flex flex-col text-white mx-4" @submit.prevent="handleSignUp">
           <input class="
@@ -50,6 +50,9 @@
           </ThiccButton>
         </form>
       </WindowCard>
+      <div class="mt-4 text-xl text-white text-center cursor-pointer" @click='router.push("/login")'>
+        <p>Login</p>
+      </div>
     </main>
     <Footer />
   </div>

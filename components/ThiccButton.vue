@@ -22,6 +22,7 @@
     text-center
     font-gohu
     text-xl
+    cursor-pointer
     rounded-vl" :class="['bg-' + props.color]">
     <slot />
   </div>

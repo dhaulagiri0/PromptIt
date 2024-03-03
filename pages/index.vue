@@ -18,15 +18,15 @@
             <ThiccButton>
               <h3>Join a Game</h3>
             </ThiccButton>
-            <ThiccButton color="offwhite">
+            <ThiccButton color="offwhite"  @click="handleCreateGame">
               <h3>Start a Game</h3>
             </ThiccButton>
           </div>
         </WindowCard>
-        <div class="flex p-10 min-w-[100px]">
-              <button class="flex-1 basis-2/5 text-offwhite text-2xl text-right" a-href="">Login</button>
+        <div v-if="user == null" class="flex p-10 min-w-[100px]">
+              <button class="flex-1 basis-2/5 text-offwhite text-2xl text-right" @click="router.push('/login')">Login</button>
               <p class="flex-1 basis-1/5 text-offwhite text-2xl text-center">|</p>
-              <button class="flex-1 basis-2/5 text-offwhite text-2xl text-left" a-href="">Sign Up</button>
+              <button class="flex-1 basis-2/5 text-offwhite text-2xl text-left" @click="router.push('/signup')">Sign Up</button>
         </div>
       </div>
     </div>
@@ -35,4 +35,27 @@
 </template>
 
 <script setup lang="ts">
+const router = useRouter()
+const { createGame } = useLobby()
+const { getCurrentUser } = useAuth();
+import { type User } from 'firebase/auth';
+const user = ref<User | null>(null);
+
+onBeforeMount(async () => {
+  const _user = await getCurrentUser()
+  if (_user) {
+    user.value = _user
+  }
+})
+
+const handleCreateGame = async () => {
+  const _user = await getCurrentUser()
+  if (!_user) {
+    return console.log("You must be logged in to create a game")
+  }
+  user.value = _user
+  const game = await createGame(user.value.uid)
+  router.push(`/lobby/${game}`)
+}
+
 </script>
