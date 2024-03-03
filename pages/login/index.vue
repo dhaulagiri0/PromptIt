@@ -2,8 +2,8 @@
   <div
     id="login"
     class="bg-gradient-to-tr from-richpink to-richblue h-screen font-gohu overflow-x-hidden flex flex-col">
-    <Header />
-    <main class="grow flex items-center">
+    <Header class="absolute"/>
+    <main class="grow flex flex-col justify-center">
       <WindowCard class="place-items-center max-w-96">
         <form class="flex flex-col text-white mx-4" @submit.prevent="handleLogin">
           <input class="
@@ -48,8 +48,14 @@
           <ThiccButton class="mt-4 w-full bg-white text-black cursor-pointer" type="submit" @click="handleLoginWithGoogle">
             <h3>Login with Google</h3>
           </ThiccButton>
+          <div v-if="showError" class="text-center mt-4 text-black">
+            <h3>{{ errorMessage }}</h3>
+          </div>
         </form>
       </WindowCard>
+      <div class="mt-4 text-xl text-white text-center cursor-pointer" @click='router.push("/signup")'>
+        <p>Sign Up</p>
+      </div>
     </main>
     <Footer />
   </div>
@@ -59,6 +65,10 @@
 const { logInUser, logInUserWithGoogle, sendResetEmail } = useAuth()
 const router = useRouter()
 
+const showError = ref(false)
+const errorMessage = ref<string>("")
+
+
 const credentials = reactive({
   email: '',
   password: ''
@@ -66,12 +76,32 @@ const credentials = reactive({
 
 async function handleLogin() {
   console.log("Handling log in");
+  showError.value = false;
   console.log("Email: ", credentials.email, " Password: ", credentials.password);
   if (!credentials.email || !credentials.password) {
-    console.log('Please fill in all fields');
+    errorMessage.value = "Please enter an email and password"
+    showError.value = true;
     return;
   }
   logInUser(credentials.email, credentials.password)
+    .then((user) => {
+      console.log("User logged in: ", user);
+      router.push('/');
+    })
+    .catch((e: any) => {
+      // if (e.value.includes(auth/user-not-found")) {
+      if (e.message == "Firebase: Error (auth/invalid-credential).") {
+        errorMessage.value = "Invalid credentials"
+      } else {
+        errorMessage.value = e.message
+      }
+      showError.value = true;
+    });
+}
+
+async function handleLoginWithGoogle() {
+  console.log("Handling log in with Google");
+  logInUserWithGoogle()
     .then((user) => {
       console.log("User logged in: ", user);
       router.push('/');

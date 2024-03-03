@@ -5,7 +5,7 @@
     <Header class="absolute"/>
     <main class="grow flex flex-col justify-center">
       <WindowCard class="place-items-center max-w-96">
-        <form class="flex flex-col text-white mx-4" @submit.prevent="handleSignUp">
+        <form class="flex flex-col text-white mx-4" @submit.prevent="handleLogin">
           <input class="
             border-white
             mt-2
@@ -42,71 +42,48 @@
             placeholder="Password_"
             required
             />
-          <ThiccButton class="mt-4 w-full bg-white text-black cursor-pointer" type="submit" @click="handleSignUp">
-            <h3>Sign Up</h3>
+          <ThiccButton class="mt-4 w-full bg-white text-black cursor-pointer" type="submit" @click="handleLogin">
+            <h3>Login</h3>
           </ThiccButton>
           <ThiccButton class="mt-4 w-full bg-white text-black cursor-pointer" type="submit" @click="handleLoginWithGoogle">
             <h3>Login with Google</h3>
           </ThiccButton>
-          <div v-if="showError" class="text-center mt-4 text-black">
-            <h3>{{ errorMessage }}</h3>
+          <div v-if="showError.value" class="text-center mt-4 text-black">
+            <h3>{{ errorMessage.value }}</h3>
           </div>
         </form>
       </WindowCard>
-      <div class="mt-4 text-xl text-white text-center cursor-pointer" @click='router.push("/login")'>
-        <p>Login</p>
+      <div class="mt-4 text-xl text-white text-center cursor-pointer" @click='router.push("/signup")'>
+        <p>Sign Up</p>
       </div>
     </main>
     <Footer />
   </div>
 </template>
 
-
 <script setup lang="ts">
-const { createUser, validatePassword, logInUserWithGoogle, sendResetEmail } = useAuth()
+const { logInUser, logInUserWithGoogle, sendResetEmail } = useAuth()
 const router = useRouter()
 
 const showError = ref(false)
 const errorMessage = ref<string>("")
+
 
 const credentials = reactive({
   email: '',
   password: ''
 })
 
-async function handleSignUp() {
+async function handleLogin() {
+  console.log("Handling log in");
   showError.value = false;
   console.log("Email: ", credentials.email, " Password: ", credentials.password);
   if (!credentials.email || !credentials.password) {
+    errorMessage.value = "Please enter a valid email and password"
     showError.value = true;
-    errorMessage.value = "Please enter an email and password";
-  }
-  if (!validatePassword(credentials.password)) {
-    showError.value = true;
-    errorMessage.value = "Password must have uppercaee, lowercase, number, and be at least 8 characters long";
     return;
   }
-  let user: User | undefined;
-  try {
-    user = await createUser(credentials.email, credentials.password);
-    if (user) {
-      router.push('/');
-    }
-  } catch (e: any) {
-    if (e.message == 'Firebase: Error (auth/email-already-in-use).') {
-      errorMessage.value = "Email already in use";
-    } else {
-      errorMessage.value = e.message;
-      console.error(e);
-    }
-    showError.value = true;
-  }
-  console.log(showError.value);
-}
-
-async function handleLoginWithGoogle() {
-  console.log("Handling log in with Google");
-  logInUserWithGoogle()
+  logInUser(credentials.email, credentials.password)
     .then((user) => {
       console.log("User logged in: ", user);
       router.push('/');

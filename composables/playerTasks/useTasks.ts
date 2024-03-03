@@ -17,7 +17,7 @@ import {
 export default function() {
     const nuxtApp = useNuxtApp();
     const db = nuxtApp.$firestore;
-
+  
     // clears general and indiv tasks
     async function clearTasks(
         gameId: string,
@@ -36,6 +36,60 @@ export default function() {
             console.log("you done fucked up boy");
         }
     };
+
+    // attempt to retrieve game data
+    // returns null if game does not exist
+    async function checkGame(
+        gameId: string,
+    ) {
+        try {
+            const docRef = doc(db, "games", gameId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                return docSnap;
+            } else {
+                return null;
+            }
+        } catch(error) {
+            console.log(error);
+            return null;
+        }
+    }
+  
+    async function addTasks(
+        gameId: string,
+    ) {
+        const docRef = doc(db, "games", gameId)
+        const generalTasks = {
+            "generalTasks" : {
+                "Task 3" : {
+                    "description" : "Description for task3",
+                    "taskStatus" : "not completed"
+                },
+                "Task 2" : {
+                    "description" : "Description for task2",
+                    "taskStatus" : "not completed"
+                }
+            }
+        }
+        checkGame(gameId).then(
+            res => {
+                if (res != "failure" && res.exists()) {
+                    return new Promise<void>((resolve, reject) => {
+                        try {
+                            const res = setDoc(docRef, generalTasks, { merge: true })
+                            resolve(res)
+                        } catch(error) {
+                            console.log(error)
+                            reject("something went wrong!")
+                        }
+                    })
+                } else {
+                    console.log("error retrieving game info!")
+                }
+            }
+        )
+    }
 
     // pick n tasks from a given array of tasks
     // and converts them into a dictionary of
@@ -57,24 +111,7 @@ export default function() {
         return tasks;
     }
 
-    // attempt to retrieve game data
-    // returns null if game does not exist
-    async function checkGame(
-        gameId: string,
-    ) {
-        try {
-            const docRef = doc(db, "games", gameId);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                return docSnap;
-            } else {
-                return null;
-            }
-        } catch(error) {
-            console.log(error);
-            return null;
-        }
-    }
+
 
     // returns a dictionary of tasks 
     // with "general" and "individual" as keys
@@ -190,6 +227,8 @@ export default function() {
     }
 
     return {
+        clearTasks,
+        addTasks,
         updateTaskStatus,
         clearTasks,
         addIndividualTask,
