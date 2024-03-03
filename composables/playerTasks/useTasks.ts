@@ -22,8 +22,8 @@ export default function() {
     async function clearTasks(
         gameId: string,
     ){
-        const docRef = doc(db, "games", gameId)
-        const docSnap = checkGame(gameId)
+        const docRef = doc(db, "games", gameId);
+        const docSnap = checkGame(gameId);
 
         if (docSnap != null) {
             await updateDoc(docRef, {
@@ -33,7 +33,7 @@ export default function() {
                 indivTasks: deleteField()
             });
         } else {
-            console.log("you done fucked up boy")
+            console.log("you done fucked up boy");
         }
     };
 
@@ -46,15 +46,15 @@ export default function() {
         if (n <= arr.length){
             selected = shuffled.slice(0, n);
         } else {
-            selected = shuffled
+            selected = shuffled;
         }
 
-        var tasks = {}
+        var tasks = {};
         selected.forEach(task => {
             tasks[task["id"]] = task;
             tasks[task["id"]]["status"] = "incomplete";          
         })
-        return tasks
+        return tasks;
     }
 
     // attempt to retrieve game data
@@ -63,27 +63,27 @@ export default function() {
         gameId: string,
     ) {
         try {
-            const docRef = doc(db, "games", gameId)
-            const docSnap = await getDoc(docRef)
+            const docRef = doc(db, "games", gameId);
+            const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                return docSnap
+                return docSnap;
             } else {
-                return null
+                return null;
             }
         } catch(error) {
-            console.log(error)
-            return null
+            console.log(error);
+            return null;
         }
     }
 
     // returns a dictionary of tasks 
     // with "general" and "individual" as keys
     async function retrieveTasks() {
-        const colRef = collection(db, "tasks")
-        const querySnap = await getDocs(colRef)
+        const colRef = collection(db, "tasks");
+        const querySnap = await getDocs(colRef);
         var tasks = {}
-        querySnap.forEach((doc) => tasks[doc.id] = doc.data())
-        return tasks
+        querySnap.forEach((doc) => tasks[doc.id] = doc.data());
+        return tasks;
     }
 
 
@@ -92,13 +92,13 @@ export default function() {
     async function retrievePlayers(
         gameId: string,
     ) {
-        const docSnap = await checkGame(gameId)
+        const docSnap = await checkGame(gameId);
         if (docSnap != null) {
-            const players = docSnap.data()["players"]
-            return players
+            const players = docSnap.data()["players"];
+            return players;
         } else {
-            console.log("error retrieving game info!")
-            return null
+            console.log("error retrieving game info!");
+            return null;
         }
     }
 
@@ -110,14 +110,14 @@ export default function() {
     ) {
         const docRef = doc(db, "games", gameId)
         const generalTasks = (await retrieveTasks())["general"]["tasks"];
-        const selectedTasks = pickRandomTasks(generalTasks, numTasks)
-        const docSnap = checkGame(gameId)
+        const selectedTasks = pickRandomTasks(generalTasks, numTasks);
+        const docSnap = checkGame(gameId);
         if (docSnap != null) {
-            await setDoc(docRef, {"generalTasks" : selectedTasks}, { merge: true })
-            return "success"
+            await setDoc(docRef, {"generalTasks" : selectedTasks}, { merge: true });
+            return "success";
         } else {
-            console.log("error retrieving game info!")
-            return null
+            console.log("error retrieving game info!");
+            return null;
         }
     }
 
@@ -129,21 +129,68 @@ export default function() {
         numTasks: number = 5,
     ) {    
         const indivTasks = (await retrieveTasks())["individual"]["tasks"];
-        const selectedTasks = pickRandomTasks(indivTasks, numTasks)
-        const docSnap = checkGame(gameId)
-        const docRef = doc(db, "games", gameId)
+        const selectedTasks = pickRandomTasks(indivTasks, numTasks);
+        const docSnap = checkGame(gameId);
+        const docRef = doc(db, "games", gameId);
         if (docSnap != null) {
             const add = {}
-            add[playerId] = selectedTasks
-            await setDoc(docRef, {"indivTasks" : add}, { merge: true })
-            return "success"
+            add[playerId] = selectedTasks;
+            await setDoc(docRef, {"indivTasks" : add}, { merge: true });
+            return "success";
         } else {
-            console.log("error retrieving game info!")
-            return null
+            console.log("error retrieving game info!");
+            return null;
+        }
+    }
+
+    // set status of given task in given
+    // game to complete
+    // if no playerId is given, the given
+    // task is treated as a general task
+    async function updateTaskStatus(
+        gameId: string, 
+        taskId: string,
+        playerId: string | null = null,
+    ){
+        // verify game data
+        const docSnap = checkGame(gameId);
+        if (docSnap == null) return null;
+
+        var update = {}
+        if (playerId == null) {
+            // general task case
+            update = {
+                "generalTasks" : {
+                    [taskId] : {
+                        "status" : "completed"
+                    }
+                }
+            }
+        } else {
+            update = {
+                "indivTasks" : {
+                    [playerId] : {
+                        [taskId] : {
+                            "status" : "completed"
+                        }
+                    }
+                }
+            }
+        }
+        
+        // update
+        try {
+            const docRef = doc(db, "games", gameId);
+            const res = await setDoc(docRef, update, { merge: true });
+            return "success";
+        } catch (error) {
+            console.log(error);
+            return null;
         }
     }
 
     return {
+        updateTaskStatus,
         clearTasks,
         addIndividualTask,
         retrievePlayers,
