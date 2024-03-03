@@ -2,17 +2,18 @@ import {
   createUserWithEmailAndPassword,
   type User,
   onAuthStateChanged,
+  GoogleAuthProvider,
   deleteUser,
   signInWithEmailAndPassword,
   signOut,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  signInWithPopup
 } from "firebase/auth"
 
 export default function() {
   const nuxtApp = useNuxtApp();
   const db = nuxtApp.$firestore;
   const auth = nuxtApp.$auth;
-
 
   function getCurrentUser(): Promise<User | null> {
     return new Promise((resolve, reject) => {
@@ -59,6 +60,11 @@ export default function() {
     await signInWithEmailAndPassword(auth, email, password);
   }
 
+  async function logInUserWithGoogle() {
+    const googleProvider = await new GoogleAuthProvider();
+    await signInWithPopup(auth, googleProvider);
+  }
+
   async function logout() {
     await signOut(auth);
   }
@@ -83,6 +89,7 @@ export default function() {
     sendResetEmail,
     logout,
     logInUser,
+    logInUserWithGoogle,
     createUser,
     getCurrentUser
   };
