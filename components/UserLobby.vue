@@ -8,6 +8,10 @@
       type: String,
       default: 'user-icon.svg',
     },
+    'showButton': {
+      type: Boolean,
+      default: false
+    }
   });
 </script>
 <template>
@@ -27,7 +31,7 @@
       <ConsoleDisplay :text="text"/>
     </div>
     <div class="flex-none">
-      <button class="
+      <button v-if="showButton" class="
         bg-richred
         rounded-vl
         border-4

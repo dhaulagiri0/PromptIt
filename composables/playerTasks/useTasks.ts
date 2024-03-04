@@ -227,10 +227,10 @@ export default function() {
     }
 
     return {
+        checkGame,
         clearTasks,
         addTasks,
         updateTaskStatus,
-        clearTasks,
         addIndividualTask,
         retrievePlayers,
         addGeneralTasks,
