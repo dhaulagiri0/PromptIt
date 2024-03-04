@@ -12,7 +12,7 @@ export const useGameStore = defineStore('game_states', () => {
     const gameStatus = ref("waiting");
     const generalTasks = ref({});
     const indivTasks = ref({});
-    const players = ref([]);
+    const players = ref({});
 
     function setGameId(_gameId: string) {
       gameId.value = _gameId;
@@ -35,8 +35,8 @@ export const useGameStore = defineStore('game_states', () => {
         generalTasks.value = gameData["generalTasks"];
         indivTasks.value = gameData["indivTasks"];
 
-        console.log(antagonistId.value)
-        console.log(generalTasks.value)
+        console.log(hostId.value)
+        console.log(players.value)
     }
 
     // clear all refs after game finishes

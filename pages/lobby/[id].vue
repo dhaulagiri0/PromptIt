@@ -4,7 +4,7 @@
     class="bg-gradient-to-tr from-richpink to-richblue h-screen font-gohu overflow-x-hidden flex flex-col">
     <Header class="absolute mt-4 ml-6"/>
     <main class="grow flex flex-row justify-center">
-      <div class="flex items-center gap-16">
+      <div v-if="hostId != undefined" class="flex items-center gap-16">
         <div class="space-y-4 max-w-80">
           <div class="
             border-black
@@ -24,7 +24,7 @@
           </div>
           <div class="flex gap-4">
             <UserIcon />
-            <ConsoleDisplay class="grow" :text="'Host Name'" />
+            <ConsoleDisplay v-if="Object.keys(players).length != 0" class="grow" :text="players[hostId]['name']" />
           </div>
           <div class="
             border-white
@@ -48,15 +48,16 @@
             </div>
           </div>
           <h3 class="text-white text-xl">Share this code with your friends!</h3>
-          <ThiccButton class="w-52 text-black bg-white">
+          <ThiccButton v-if="hostId == userId" class="w-52 text-black bg-white">
             Start Game
           </ThiccButton>
         </div>
         <WindowCard class="w-[800px]" header-color="richpink" :text="Lobby">
           <div class="grid grid-cols-2 grid-rows-4">
-            <div v-for="playerID in players" :key="playerID">
-              <UserLobby>
-              </UserLobby>
+            <div v-if="Object.keys(players).length != 0" v-for="player in players" :key="player['id']">
+              <UserLobby 
+              :text="player['name']" 
+              :show-button="hostId == userId && player['id'] != userId"/>
             </div>
           </div>
         </WindowCard>
@@ -67,16 +68,36 @@
 
 
 <script setup lang="ts">
-const { createGame } = useLobby()
-const router = useRouter()
-const route = useRoute()
+  const { createGame } = useLobby()
+  const { subscribeGameState } = useGameListeners()
+  import { storeToRefs } from 'pinia'
+  const router = useRouter()
+  const route = useRoute()
+  const { getCurrentUser } = useAuth();
+  import { type User } from 'firebase/auth';
+  import { useGameStore } from '~/stores/game' 
+  const user = ref<User | null>(null);
+  const userName = ref<string | null>(null);
+  const userId = ref<string | null>(null);
+  const gameStore = useGameStore()
+  const gameId = route.params.id;
+  const { hostId, players, gameStatus } = storeToRefs(gameStore)
+  const isHost = ref(userId == hostId)
 
-const players = ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8"];
+  onBeforeMount(async () => {
+    const unsub = subscribeGameState(gameId, gameStore.updateState)
+    const _user = await getCurrentUser()
+    if (_user) {
+      user.value = _user
+    } else {
+      router.push(`/`)
+    }
+    console.log(_user)
+    userName.value = _user["displayName"]
+    userId.value = _user["uid"]
+  })
 
-const gameId = route.params.id;
-
-async function copyGameId() {
-  await navigator.clipboard.writeText(gameId);
-}
-
+  async function copyGameId() {
+    await navigator.clipboard.writeText(gameId);
+  }
 </script>

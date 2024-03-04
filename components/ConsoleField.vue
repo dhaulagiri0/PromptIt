@@ -1,4 +1,5 @@
 <script setup>
+  const model = defineModel()
   const props = defineProps({
     'placeholderText': {
       type: String, 
@@ -30,6 +31,7 @@
     :type="type"
     :class="[shadow ? 'drop-shadow-solid' : '']"
     :placeholder="placeholderText" 
+    v-model="model"
     >
   </input>
 </template>
