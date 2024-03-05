@@ -52,7 +52,7 @@
             Start Game
           </ThiccButton>
         </div>
-        <WindowCard class="w-[800px]" header-color="richpink" :text="Lobby">
+        <WindowCard class="w-[800px]" header-color="richpink" headerText="Lobby">
           <div class="grid grid-cols-2 grid-rows-4">
             <div v-if="Object.keys(players).length != 0" v-for="player in players" :key="player['id']">
               <UserLobby 
@@ -92,12 +92,21 @@
     } else {
       router.push(`/`)
     }
-    console.log(_user)
     userName.value = _user["displayName"]
     userId.value = _user["uid"]
+
+    if (userId.value == hostId.value) {
+      console.log("is host")
+      // attach listener on all players
+      
+    } else {
+      console.log("not host")
+      // attach listener to host
+    }
   })
 
   async function copyGameId() {
     await navigator.clipboard.writeText(gameId);
   }
+
 </script>
