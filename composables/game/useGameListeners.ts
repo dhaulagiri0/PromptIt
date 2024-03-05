@@ -17,7 +17,6 @@ import {
         gameId: string,
         updateState: (doc : DocumentData) => void
     ):Promise<Unsubscribe> {
-        const tasksRef = doc(db, "games", gameId);
         const q = query(collection(db, "games"), where("gameId", "==", gameId));
         return onSnapshot(
             q,
