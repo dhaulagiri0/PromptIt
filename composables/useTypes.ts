@@ -1,7 +1,8 @@
 export type Message = {
   text: string;
-  user: string | undefined;
+  sentBy: string | undefined;
   createdAt: string | undefined;
+  userName: string | undefined;
 }
 
 export type Game = {

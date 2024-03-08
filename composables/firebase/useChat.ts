@@ -32,6 +32,9 @@ export default function() {
     // if (!user) {
     //   throw new Error('User not logged in');
     // }
+    if (!message) {
+      return
+    }
 
     try {
       const messagesRef = collection(db, 'messages/PersonalChats/' + chatId);

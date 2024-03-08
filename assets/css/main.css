@@ -17,4 +17,5 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+    .scrolling-auto { display: flex; overflow: auto; flex-direction: column-reverse; }
 }
