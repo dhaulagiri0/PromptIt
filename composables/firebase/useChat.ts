@@ -10,17 +10,12 @@ import {
 
 export default function() {
   const { $firestore: db } = useNuxtApp();
-  // const { getCurrentUser } = useAuth();
+  const { getCurrentUser } = useAuth();
 
-  async function subscribeMessages(
+  async function subscribeMessages(chatId: String, 
     callback: (messages: Message[]) => void
   ): Promise<Unsubscribe> {
-    // const user = await getCurrentUser();
-    // if (!user) {
-    //   throw new Error('User not logged in');
-    // }
-
-    const messagesRef = collection(db, 'messages');
+    const messagesRef = collection(db, 'messages/PersonalChats/' + chatId);
     const q = query(messagesRef, orderBy('createdAt'));
 
     return onSnapshot(q, (snapshot) => {
@@ -32,22 +27,24 @@ export default function() {
     });
   }
 
-  async function sendMessage(message: string) {
+  async function sendMessage(message: string, chatId: string) {
     // const user = await getCurrentUser();
     // if (!user) {
     //   throw new Error('User not logged in');
     // }
 
     try {
-      const messagesRef = collection(db, 'messages');
-      console.log('message: ', message)
+      const messagesRef = collection(db, 'messages/PersonalChats/' + chatId);
+      const user = await getCurrentUser();
       const messagesDoc = await addDoc(messagesRef, {
         text: message,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        sentBy: user.uid,
+        userName: user.displayName
       });
-      console.log('Document written with ID: ', messagesDoc.id);
+      // console.log('Document written with ID: ', messagesDoc.id);
     } catch (error) {
-      console.error('Error adding document: ', error);
+      // console.error('Error adding document: ', error);
     }
   }
 
