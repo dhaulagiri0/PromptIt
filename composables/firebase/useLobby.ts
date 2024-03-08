@@ -22,38 +22,6 @@ export default function() {
   const db = nuxtApp.$firestore;
   const auth = nuxtApp.$auth;
 
-  async function createGame(userId: string) {
-    try {
-      const gameId = Math.random().toString(36).substr(2, 6);
-      const gameRef = doc(db, "games", gameId);
-      console.log("Hello");
-      console.log(gameId);
-      const gameDoc = await setDoc(gameRef, {
-        gameId: gameId,
-        host: userId,
-        players: [userId],
-        state: "waiting"
-      });
-      return gameRef.id;
-    } catch (e: error) {
-      console.error(e);
-    }
-  }
-
-  async function subscribeGame(gameId: String, callback: (game: Game) => void): Unsubscribe {
-    return onSnapshot(doc(db, "games", gameId), doc => {
-      const game = doc.data();
-      if (game) {
-        callback(game as Game);
-  // async function subscribeGame(gameId: String, callback: (game: Game) => void): Unsubscribe {
-  //   return onSnapshot(doc(db, "games", gameId), doc => {
-  //     const game = doc.data();
-  //     if (game) {
-  //       callback(game as Game);
-  //     }
-  //   });
-  // }
-
   async function deleteGame(gameId: string) {
     try {
       const docRef = doc(db, "games", gameId);
@@ -87,6 +55,20 @@ export default function() {
       console.error(e);
     }
   }
+
+  async function subscribeGame(gameId: String, callback: (game: Game) => void): Unsubscribe {
+    return onSnapshot(doc(db, "games", gameId), doc => {
+      const game = doc.data();
+      if (game) {
+        callback(game as Game);
+  // async function subscribeGame(gameId: String, callback: (game: Game) => void): Unsubscribe {
+  //   return onSnapshot(doc(db, "games", gameId), doc => {
+  //     const game = doc.data();
+  //     if (game) {
+  //       callback(game as Game);
+  //     }
+  //   });
+  // }
 
   async function joinGame(gameId: string, userId: string, userName: string) {
     try {
