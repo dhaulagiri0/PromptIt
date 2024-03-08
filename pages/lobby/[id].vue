@@ -74,7 +74,7 @@
   const router = useRouter();
   const route = useRoute();
   const { getCurrentUser } = useAuth();
-  const { updateUserState } = useUserState();
+  const { updateUserState, subscribeHostState } = useUserState();
   import { type User } from 'firebase/auth';
   import { type Unsubscribe } from 'firebase/firestore';
   import { useGameStore } from '~/stores/game'; 
@@ -99,14 +99,12 @@
 
     updateUserState(userId.value, "ingame");
 
-    // if (userId.value == hostId.value) {
-    //   console.log("is host");
-    //   // attach listener on all players
-      
-    // } else {
-    //   console.log("not host");
-    //   // attach listener to host
-    // }
+    if (userId.value == hostId.value) {
+      console.log("is host");
+    } else {
+      console.log("not host");
+      subscribeHostState(hostId.value, goBack);
+    }
     unsub = subscribeGameState(_user, gameId, gameStore);
   })
 

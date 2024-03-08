@@ -58,10 +58,9 @@ export default function() {
         set(presenceRef, updateStateForDatabase)
     }
 
-    async function subscribePlayerState(playerId: string, gameId: string, callback: () => void) {
+    async function subscribePlayerState(playerId: string, gameId: string) {
         const presenceRef = ref(fdb, 'users/' + playerId);
         var isFirst = true;
-        // console.log("listener attached to " + playerId)
         onValue(presenceRef, (snapshot) => {
             const playerState = snapshot.val()["state"]
             if (playerState != "ingame" && !isFirst) {
@@ -75,7 +74,23 @@ export default function() {
         })
     }
 
+    async function subscribeHostState(hostId: string, callback: () => void) {
+        const presenceRef = ref(fdb, 'users/' + hostId);
+        var isFirst = true;
+        onValue(presenceRef, (snapshot) => {
+            const playerState = snapshot.val()["state"]
+            if (playerState != "ingame" && !isFirst) {
+                callback();
+                return
+            }
+            if (isFirst) {
+                isFirst = false;
+            }
+        })
+    }
+
     return {
+        subscribeHostState,
         updateUserState,
         subscribePlayerState,
         onDisconnectListener,
