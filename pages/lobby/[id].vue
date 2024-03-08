@@ -125,7 +125,7 @@
 
   async function goBack() {
     unsub();
-    if (userId == hostId.value) {
+    if (userId.value == hostId.value) {
       deleteGame(gameId);
     }
     router.push("/");
