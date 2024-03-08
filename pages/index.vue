@@ -54,7 +54,7 @@ const gameCode = ref("");
 onBeforeMount(async () => {
   const _user = await getCurrentUser();
   if (_user) {
-    console.log("found user")
+    // console.log("found user")
     user.value = _user;
     onDisconnectListener(user.value);
     updateUserState(user.value.uid, "online");

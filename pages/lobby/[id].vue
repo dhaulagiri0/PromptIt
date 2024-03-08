@@ -99,14 +99,14 @@
 
     updateUserState(userId.value, "ingame");
 
-    if (userId.value == hostId.value) {
-      console.log("is host");
-      // attach listener on all players
+    // if (userId.value == hostId.value) {
+    //   console.log("is host");
+    //   // attach listener on all players
       
-    } else {
-      console.log("not host");
-      // attach listener to host
-    }
+    // } else {
+    //   console.log("not host");
+    //   // attach listener to host
+    // }
     unsub = subscribeGameState(_user, gameId, gameStore);
   })
 
@@ -115,9 +115,7 @@
   }
 
   async function goBack() {
-    console.log(unsub)
     if (unsub != null) {
-      console.log("unsubbed");
       (await unsub)();
     }
     router.push("/");
