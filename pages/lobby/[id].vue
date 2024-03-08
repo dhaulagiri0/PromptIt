@@ -101,18 +101,24 @@
     userName.value = _user["displayName"];
     userId.value = _user["uid"];
 
-    if (userId.value == hostId.value) {
-      console.log("is host");
-    } else {
-      console.log("not host");
-      subscribeHostState(hostId.value, hostLeftCall);
-    }
-
     await updateUserState(userId.value, "ingame");
     unsub = await subscribeGameState(_user, gameId, gameStore, goBack);
+    
+    // wait for game data to update
+    watch(hostId, () => {
+      if (userId.value == hostId.value) {
+        console.log("is host");
+      } else {
+        console.log("not host");
+        subscribeHostState(hostId.value, hostLeftCall);
+      }
+    })  
   })
 
-
+  function delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+  
   async function copyGameId() {
     await navigator.clipboard.writeText(gameId);
   }
