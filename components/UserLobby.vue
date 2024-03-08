@@ -41,8 +41,9 @@
     <div class="flex-1 w-fill">
       <ConsoleDisplay :text="text"/>
     </div>
-    <div class="flex-none">
+    <div class="flex-none align-middle h-fill">
       <button v-if="showButton" class="
+        h-fit
         bg-richred
         rounded-vl
         border-4
@@ -52,7 +53,7 @@
         p-3
         hover:drop-shadow-solid-grey
       " @click="kick">
-        <IconsCross color="white"/>
+        <IconsCross class="size-4" color="white"/>
       </button>
     </div>
   </div>

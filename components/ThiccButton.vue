@@ -15,7 +15,6 @@
     drop-shadow-solid
     px-2 
     border-4
-    mx-auto
     p-3
     pl-5
     pr-5

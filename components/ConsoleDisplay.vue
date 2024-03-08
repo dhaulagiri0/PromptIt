@@ -27,6 +27,6 @@
     "
     :class="[shadow ? 'drop-shadow-solid' : '']"
     >
-    <h3>{{ text }}</h3>
+    <h3 class="text-ellipsis text-nowrap">{{ text }}</h3>
   </div>
 </template>
