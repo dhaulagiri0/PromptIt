@@ -24,8 +24,8 @@ export const useGameStore = defineStore('game_states', () => {
 
     // should only be used with subscribeGameState from useGameListeners
     function updateState(gameData: DocumentData) {
-        console.log(gameData);
-        console.log("we updating");
+        // console.log(gameData);
+        // console.log("we updating");
         gameId.value = gameData["gameId"];
         hostId.value = gameData["hostId"];
         antagonistId.value = gameData["antagonistId"];
@@ -35,8 +35,8 @@ export const useGameStore = defineStore('game_states', () => {
         generalTasks.value = gameData["generalTasks"];
         indivTasks.value = gameData["indivTasks"];
 
-        console.log(hostId.value)
-        console.log(players.value)
+        // console.log(hostId.value)
+        // console.log(players.value)
     }
 
     // clear all refs after game finishes

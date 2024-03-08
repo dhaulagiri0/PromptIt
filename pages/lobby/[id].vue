@@ -2,7 +2,7 @@
   <div
     id="login"
     class="bg-gradient-to-tr from-richpink to-richblue h-screen font-gohu overflow-x-hidden flex flex-col">
-    <Header class="absolute mt-4 ml-6"/>
+    <Header backVisible="true" :goBack="goBack"/>
     <main class="grow flex flex-row justify-center">
       <div v-if="hostId != undefined" class="flex items-center gap-16">
         <div class="space-y-4 max-w-80">
@@ -52,12 +52,18 @@
             Start Game
           </ThiccButton>
         </div>
-        <WindowCard class="w-[800px]" header-color="richpink" :text="Lobby">
+        <WindowCard class="w-[800px]" header-color="richpink" headerText="Lobby">
           <div class="grid grid-cols-2 grid-rows-4">
             <div v-if="Object.keys(players).length != 0" v-for="player in players" :key="player['id']">
+              <!-- <UserLobby 
+              :text="player['name']" 
+              :show-button="hostId == userId && player['id'] != userId"/> -->
               <UserLobby 
               :text="player['name']" 
-              :show-button="hostId == userId && player['id'] != userId"/>
+              :show-button="hostId == userId && player['id'] != userId"
+              :playerId="player['id']"
+              :kickFun="kick"
+              />
             </div>
           </div>
         </WindowCard>
@@ -68,36 +74,64 @@
 
 
 <script setup lang="ts">
-  const { createGame } = useLobby()
-  const { subscribeGameState } = useGameListeners()
-  import { storeToRefs } from 'pinia'
-  const router = useRouter()
-  const route = useRoute()
+  const { deleteGame } = useLobby();
+  const { subscribeGameState } = useGameListeners();
+  import { storeToRefs } from 'pinia';
+  const router = useRouter();
+  const route = useRoute();
   const { getCurrentUser } = useAuth();
+  const { updateUserState, subscribeHostState, kickPlayer } = useUserState();
   import { type User } from 'firebase/auth';
-  import { useGameStore } from '~/stores/game' 
+  import { type Unsubscribe } from 'firebase/firestore';
+  import { useGameStore } from '~/stores/game'; 
   const user = ref<User | null>(null);
   const userName = ref<string | null>(null);
   const userId = ref<string | null>(null);
-  const gameStore = useGameStore()
+  const gameStore = useGameStore();
   const gameId = route.params.id;
-  const { hostId, players, gameStatus } = storeToRefs(gameStore)
-  const isHost = ref(userId == hostId)
+  const { hostId, players, gameStatus } = storeToRefs(gameStore);
+  var unsub:Unsubscribe;
 
   onBeforeMount(async () => {
-    const unsub = subscribeGameState(gameId, gameStore.updateState)
-    const _user = await getCurrentUser()
+    const _user = await getCurrentUser();
     if (_user) {
-      user.value = _user
+      user.value = _user;
     } else {
-      router.push(`/`)
+      router.push(`/`);
     }
-    console.log(_user)
-    userName.value = _user["displayName"]
-    userId.value = _user["uid"]
+    userName.value = _user["displayName"];
+    userId.value = _user["uid"];
+
+    await updateUserState(userId.value, "ingame");
+    unsub = await subscribeGameState(_user, gameId, gameStore, goBack);
+
+    if (userId.value == hostId.value) {
+      console.log("is host");
+    } else {
+      console.log("not host");
+      subscribeHostState(hostId.value, hostLeftCall);
+    }
   })
 
   async function copyGameId() {
     await navigator.clipboard.writeText(gameId);
   }
+
+  async function hostLeftCall() {
+    unsub();
+    deleteGame(gameId);
+    router.push("/");
+  }
+
+  async function goBack() {
+    unsub();
+    if (userId.value == hostId.value) {
+      deleteGame(gameId);
+    }
+    router.push("/");
+  }
+  async function kick(playerId: string) {
+    kickPlayer(playerId, gameId);
+  }
+
 </script>

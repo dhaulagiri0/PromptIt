@@ -1,8 +1,11 @@
 <script setup>
   const props = defineProps({
-    "isVisible" : {
+    "backVisible" : {
       type: Boolean,
       default: false
+    },
+    "goBack" : {
+      default: console.log("back"),
     }
   })
 </script>
@@ -20,7 +23,7 @@
       <img class="h-20" src="~/assets/images/logo-png.png">
     </div>
     <div class="flex-1 w-fill" />
-    <div class="flex-none h-20" :class="[isVisible ? '' : 'invisible']">
+    <div class="flex-none h-20" :class="[backVisible ? '' : 'invisible']" @click="goBack">
       <IconsBack />
     </div>
   </div>
