@@ -55,9 +55,12 @@
         <WindowCard class="w-[800px]" header-color="richpink" headerText="Lobby">
           <div class="grid grid-cols-2 grid-rows-4">
             <div v-if="Object.keys(players).length != 0" v-for="player in players" :key="player['id']">
+              <!-- <UserLobby 
+              :text="player['name']" 
+              :show-button="hostId == userId && player['id'] != userId"/> -->
               <UserLobby 
               :text="player['name']" 
-              :show-button="hostId == userId && player['id'] != userId"/>
+              />
             </div>
           </div>
         </WindowCard>
@@ -68,7 +71,7 @@
 
 
 <script setup lang="ts">
-  const { createGame } = useLobby();
+  const { deleteGame } = useLobby();
   const { subscribeGameState } = useGameListeners();
   import { storeToRefs } from 'pinia';
   const router = useRouter();
@@ -103,18 +106,25 @@
       console.log("is host");
     } else {
       console.log("not host");
-      subscribeHostState(hostId.value, goBack);
+      subscribeHostState(hostId.value, hostLeftCall);
     }
-    unsub = subscribeGameState(_user, gameId, gameStore);
+    unsub = subscribeGameState(_user, gameId, gameStore, goBack);
   })
 
   async function copyGameId() {
     await navigator.clipboard.writeText(gameId);
   }
 
+  async function hostLeftCall() {
+    (await unsub)();
+    deleteGame(gameId);
+    router.push("/");
+  }
+
   async function goBack() {
-    if (unsub != null) {
-      (await unsub)();
+    (await unsub)();
+    if (isHost) {
+      deleteGame(gameId);
     }
     router.push("/");
   }
