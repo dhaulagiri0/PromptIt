@@ -27,7 +27,6 @@ import {
             q,
             (snapshot) => { 
                 snapshot.docChanges().forEach((change) => {
-                    console.log("update")
                     if (user["uid"] == hostId.value) {
                         const players = change.doc.data()["players"]
                         for (let key in players) {

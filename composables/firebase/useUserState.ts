@@ -61,7 +61,7 @@ export default function() {
     async function subscribePlayerState(playerId: string, gameId: string, callback: () => void) {
         const presenceRef = ref(fdb, 'users/' + playerId);
         var isFirst = true;
-        console.log("listener attached to " + playerId)
+        // console.log("listener attached to " + playerId)
         onValue(presenceRef, (snapshot) => {
             const playerState = snapshot.val()["state"]
             if (playerState != "ingame" && !isFirst) {
