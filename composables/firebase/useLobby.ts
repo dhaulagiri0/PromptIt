@@ -47,8 +47,6 @@ export default function() {
     try {
       const gameId = Math.random().toString(36).substr(2, 6);
       const gameRef = doc(db, "games", gameId);
-      console.log("Hello");
-      console.log(gameId);
       const gameDoc = await setDoc(gameRef, {
         gameId: gameId,
         hostId: userId,
