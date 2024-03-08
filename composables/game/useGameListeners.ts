@@ -31,7 +31,7 @@ import {
                         const players = change.doc.data()["players"]
                         for (let key in players) {
                             if (key != hostId.value) {
-                                subscribePlayerState(key, gameId, () => console.log("remove user"))
+                                subscribePlayerState(key, gameId)
                             }
                         }
                     }
