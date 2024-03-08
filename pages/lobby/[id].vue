@@ -2,7 +2,7 @@
   <div
     id="login"
     class="bg-gradient-to-tr from-richpink to-richblue h-screen font-gohu overflow-x-hidden flex flex-col">
-    <Header backVisible="true" :goBack="goBack"/>
+    <Header backVisible="true" :goBack="goBack" />
     <main class="grow flex flex-row justify-center">
       <div v-if="hostId != undefined" class="flex items-center gap-16">
         <div class="space-y-4 max-w-80">
