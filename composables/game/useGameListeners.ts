@@ -40,6 +40,7 @@ import {
                         if (!(user["uid"] in players)) {
                             // kicked
                             callback();
+                            return
                         }
                     } 
                     gameStore.updateState(change.doc.data());

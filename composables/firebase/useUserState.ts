@@ -67,12 +67,12 @@ export default function() {
     async function subscribePlayerState(playerId: string, gameId: string) {
         const presenceRef = ref(fdb, 'users/' + playerId);
         var isFirst = true;
-        onValue(presenceRef, (snapshot) => {
+        const unsubscribe = onValue(presenceRef, (snapshot) => {
             const playerState = snapshot.val()["state"]
             if (playerState != "ingame" && !isFirst) {
                 const gamePlyersRef = doc(db, "games", gameId);
                 updateDoc(gamePlyersRef, { ["players." + playerId] : deleteField() });
-                return
+                unsubscribe();
             }
             if (isFirst) {
                 isFirst = false;
@@ -83,11 +83,11 @@ export default function() {
     async function subscribeHostState(hostId: string, callback: () => void) {
         const presenceRef = ref(fdb, 'users/' + hostId);
         var isFirst = true;
-        onValue(presenceRef, (snapshot) => {
+        const unsubscribe = onValue(presenceRef, (snapshot) => {
             const playerState = snapshot.val()["state"]
             if (playerState != "ingame" && !isFirst) {
                 callback();
-                return
+                unsubscribe();
             }
             if (isFirst) {
                 isFirst = false;
