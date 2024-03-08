@@ -26,7 +26,7 @@ const allMessages = ref<string[]>([]);
 let unsubscribeMessages: Unsubscribe | null = null;
 
 onMounted(async () => {
-  unsubscribeMessages = await subscribeMessages((messages: Message[]) => {
+  unsubscribeMessages = await subscribeMessages("williamChat", (messages: Message[]) => {
     console.log(messages);
     console.log(messages.map((message: Message) => message.text));
     allMessages.value = messages.map((message: Message) => message.text);
@@ -40,7 +40,7 @@ onUnmounted(() => {
 const newMessage = ref<string>('');
 
 async function handleSendMessage() {
-  await sendMessage(newMessage.value);
+  await sendMessage(newMessage.value, "williamChat");
   newMessage.value = '';
 }
 </script>

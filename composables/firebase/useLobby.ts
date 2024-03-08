@@ -30,7 +30,7 @@ export default function() {
       const gameDoc = await setDoc(gameRef, {
         gameId: gameId,
         host: userId,
-        players: [],
+        players: [userId],
         state: "waiting"
       });
       return gameRef.id;
