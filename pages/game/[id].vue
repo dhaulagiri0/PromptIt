@@ -14,7 +14,7 @@ l<template>
                             scrolling-auto
                             h-[500px]">
                             <div>
-                                <div v-for="message in allMessages" :key="message">
+                                <div v-for="(message, index) in allMessages" :key="message">
                                     <div class="
                                         container
                                         flex
@@ -38,7 +38,7 @@ l<template>
                                                 text-nowrap
                                                 text-ellipsis
                                                 "
-                                                v-if="user != null && message.sentBy != user.uid"
+                                                v-if="(index == 0 && user != null && message.sentBy != user.uid) || (user != null && message.sentBy != user.uid && allMessages[index - 1] != undefined && allMessages[index - 1].sentBy != message.sentBy)"
                                                 >
                                                 {{ message.userName }}
                                             </div>
