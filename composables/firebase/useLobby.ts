@@ -66,9 +66,9 @@ export default function() {
   //     const game = doc.data();
   //     if (game) {
   //       callback(game as Game);
-  //     }
-  //   });
-  // }
+      }
+    });
+  }
 
   async function joinGame(gameId: string, userId: string, userName: string) {
     try {
@@ -96,6 +96,6 @@ export default function() {
   return {
     deleteGame,
     createGame,
-    joinGame,
+    joinGame
   };
 }
