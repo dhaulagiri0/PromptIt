@@ -58,6 +58,12 @@ export default function() {
         set(presenceRef, updateStateForDatabase)
     }
 
+    async function kickPlayer(playerId: string, gameId: string) {
+        const gamePlyersRef = doc(db, "games", gameId);
+        await updateDoc(gamePlyersRef, { ["players." + playerId] : deleteField() });
+        return
+    }
+
     async function subscribePlayerState(playerId: string, gameId: string) {
         const presenceRef = ref(fdb, 'users/' + playerId);
         var isFirst = true;
@@ -90,6 +96,7 @@ export default function() {
     }
 
     return {
+        kickPlayer,
         subscribeHostState,
         updateUserState,
         subscribePlayerState,

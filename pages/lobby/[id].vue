@@ -60,6 +60,9 @@
               :show-button="hostId == userId && player['id'] != userId"/> -->
               <UserLobby 
               :text="player['name']" 
+              :show-button="hostId == userId && player['id'] != userId"
+              :playerId="player['id']"
+              :kickFun="kick"
               />
             </div>
           </div>
@@ -77,7 +80,7 @@
   const router = useRouter();
   const route = useRoute();
   const { getCurrentUser } = useAuth();
-  const { updateUserState, subscribeHostState } = useUserState();
+  const { updateUserState, subscribeHostState, kickPlayer } = useUserState();
   import { type User } from 'firebase/auth';
   import { type Unsubscribe } from 'firebase/firestore';
   import { useGameStore } from '~/stores/game'; 
@@ -87,8 +90,7 @@
   const gameStore = useGameStore();
   const gameId = route.params.id;
   const { hostId, players, gameStatus } = storeToRefs(gameStore);
-  const isHost = ref(userId == hostId);
-  var unsub:Promise<Unsubscribe>;
+  var unsub:Unsubscribe;
 
   onBeforeMount(async () => {
     const _user = await getCurrentUser();
@@ -100,7 +102,8 @@
     userName.value = _user["displayName"];
     userId.value = _user["uid"];
 
-    updateUserState(userId.value, "ingame");
+    await updateUserState(userId.value, "ingame");
+    unsub = await subscribeGameState(_user, gameId, gameStore, goBack);
 
     if (userId.value == hostId.value) {
       console.log("is host");
@@ -108,7 +111,6 @@
       console.log("not host");
       subscribeHostState(hostId.value, hostLeftCall);
     }
-    unsub = subscribeGameState(_user, gameId, gameStore, goBack);
   })
 
   async function copyGameId() {
@@ -116,17 +118,20 @@
   }
 
   async function hostLeftCall() {
-    (await unsub)();
+    unsub();
     deleteGame(gameId);
     router.push("/");
   }
 
   async function goBack() {
-    (await unsub)();
-    if (isHost) {
+    unsub();
+    if (userId == hostId.value) {
       deleteGame(gameId);
     }
     router.push("/");
+  }
+  async function kick(playerId: string) {
+    kickPlayer(playerId, gameId);
   }
 
 </script>

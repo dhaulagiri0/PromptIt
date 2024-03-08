@@ -11,8 +11,19 @@
     'showButton': {
       type: Boolean,
       default: false
+    },
+    'playerId': {
+      type: String,
+      default: "id"
+    },
+    'kickFun': {
+      default: console.log("kicked")
     }
   });
+
+  async function kick() {
+    props.kickFun(props.playerId);
+  }
 </script>
 <template>
   <div class="
@@ -40,7 +51,7 @@
         drop-shadow-solid
         p-3
         hover:drop-shadow-solid-grey
-      ">
+      " @click="kick">
         <IconsCross color="white"/>
       </button>
     </div>
