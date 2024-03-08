@@ -45,8 +45,25 @@ export default function() {
       const game = doc.data();
       if (game) {
         callback(game as Game);
+  // async function subscribeGame(gameId: String, callback: (game: Game) => void): Unsubscribe {
+  //   return onSnapshot(doc(db, "games", gameId), doc => {
+  //     const game = doc.data();
+  //     if (game) {
+  //       callback(game as Game);
+  //     }
+  //   });
+  // }
+
+  async function deleteGame(gameId: string) {
+    try {
+      const docRef = doc(db, "games", gameId);
+      const docSnap = await checkGame(gameId);
+      if (docSnap != null) {
+        deleteDoc(docRef)
       }
-    });
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async function createGame(userId: string, userName: string) {
@@ -97,6 +114,7 @@ export default function() {
   }
 
   return {
+    deleteGame,
     createGame,
     joinGame,
   };

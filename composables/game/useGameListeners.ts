@@ -19,7 +19,8 @@ import {
     async function subscribeGameState(
         user: User,
         gameId: string,
-        gameStore
+        gameStore,
+        callback: () => void,
     ):Promise<Unsubscribe> {
         const { hostId } = storeToRefs(gameStore)
         const q = query(collection(db, "games"), where("gameId", "==", gameId));
@@ -34,7 +35,13 @@ import {
                                 subscribePlayerState(key, gameId)
                             }
                         }
-                    }
+                    } else {
+                        const players = change.doc.data()["players"]
+                        if (!(user["uid"] in players)) {
+                            // kicked
+                            callback();
+                        }
+                    } 
                     gameStore.updateState(change.doc.data());
                 })
             }
