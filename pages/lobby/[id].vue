@@ -38,6 +38,7 @@
             text-offwhite
             font-gohu
             text-3xl
+            drop-shadow-solid
             "
             @click="copyGameId"
             >
@@ -48,16 +49,13 @@
             </div>
           </div>
           <h3 class="text-white text-xl">Share this code with your friends!</h3>
-          <ThiccButton v-if="hostId == userId" class="w-52 text-black bg-white">
+          <ThiccButton v-if="hostId == userId" class="ml-auto w-fit text-black bg-white place-self-end">
             Start Game
           </ThiccButton>
         </div>
         <WindowCard class="w-[800px]" header-color="richpink" headerText="Lobby">
           <div class="grid grid-cols-2 grid-rows-4">
             <div v-if="Object.keys(players).length != 0" v-for="player in players" :key="player['id']">
-              <!-- <UserLobby 
-              :text="player['name']" 
-              :show-button="hostId == userId && player['id'] != userId"/> -->
               <UserLobby 
               :text="player['name']" 
               :show-button="hostId == userId && player['id'] != userId"
@@ -84,6 +82,7 @@
   import { type User } from 'firebase/auth';
   import { type Unsubscribe } from 'firebase/firestore';
   import { useGameStore } from '~/stores/game'; 
+  import { onMounted } from 'vue';
   const user = ref<User | null>(null);
   const userName = ref<string | null>(null);
   const userId = ref<string | null>(null);
@@ -102,16 +101,17 @@
     userName.value = _user["displayName"];
     userId.value = _user["uid"];
 
-    await updateUserState(userId.value, "ingame");
-    unsub = await subscribeGameState(_user, gameId, gameStore, goBack);
-
     if (userId.value == hostId.value) {
       console.log("is host");
     } else {
       console.log("not host");
       subscribeHostState(hostId.value, hostLeftCall);
     }
+
+    await updateUserState(userId.value, "ingame");
+    unsub = await subscribeGameState(_user, gameId, gameStore, goBack);
   })
+
 
   async function copyGameId() {
     await navigator.clipboard.writeText(gameId);
