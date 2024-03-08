@@ -42,9 +42,10 @@
 <script setup lang="ts">
 const router = useRouter();
 const { createGame, joinGame } = useLobby();
-const { onDisconnectListener } = useUserState();
+const { onDisconnectListener, updateUserState } = useUserState();
 const { getCurrentUser } = useAuth();
 import { type User } from 'firebase/auth';
+import { onMounted } from 'vue';
 const user = ref<User | null>(null);
 const showError = ref(false);
 const errorMessage = ref<string>("Error 404");
@@ -53,9 +54,11 @@ const gameCode = ref("");
 onBeforeMount(async () => {
   const _user = await getCurrentUser();
   if (_user) {
+    console.log("found user")
     user.value = _user;
+    onDisconnectListener(user.value);
+    updateUserState(user.value.uid, "online");
   }
-  onDisconnectListener(user.value);
 })
 
 const handleCreateGame = async () => {
@@ -89,5 +92,4 @@ const handleJoinGame = async () => {
     router.push(`/lobby/${gameCode.value}`)
   }
 }
-
 </script>

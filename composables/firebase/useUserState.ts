@@ -8,7 +8,9 @@ import {
     where,
     setDoc,
     type Unsubscribe,
-    type DocumentData
+    type DocumentData,
+    deleteField,
+    updateDoc
   } from 'firebase/firestore'
 import { getDatabase, ref, onDisconnect, set, onValue } from "firebase/database";
 import type { User } from 'firebase/auth';
@@ -32,10 +34,15 @@ export default function() {
         };
         const presenceRef = ref(fdb, 'users/' + user.uid);
         onValue(presenceRef, (snapshot) => {
-            console.log(snapshot.val()["state"])
             if (snapshot.val() == false) {
                 return;
             };
+
+            if (snapshot.val()["state"] != "offline") {
+                isOnlineForDatabase = {
+                    state: snapshot.val()["state"],
+                }; 
+            }
 
             onDisconnect(presenceRef).set(isOfflineForDatabase).then(function() {
                 set(presenceRef, isOnlineForDatabase);
@@ -43,22 +50,34 @@ export default function() {
         })
     };
 
-    async function subscribePlayerState(playerId: string, callback: () => void) {
+    async function updateUserState(playerId: string, state: string) {
         const presenceRef = ref(fdb, 'users/' + playerId);
+        var updateStateForDatabase = {
+            state: state,
+        };
+        set(presenceRef, updateStateForDatabase)
+    }
+
+    async function subscribePlayerState(playerId: string, gameId: string, callback: () => void) {
+        const presenceRef = ref(fdb, 'users/' + playerId);
+        var isFirst = true;
+        console.log("listener attached to " + playerId)
         onValue(presenceRef, (snapshot) => {
-            if (snapshot.val() == false) {
-                return;
-            }
             const playerState = snapshot.val()["state"]
-            if (playerState == "offline") {
-                // do stuff
-                callback();
-                return;
-            };
+            if (playerState != "ingame" && !isFirst) {
+                const gamePlyersRef = doc(db, "games", gameId);
+                updateDoc(gamePlyersRef, { ["players." + playerId] : deleteField() });
+                return
+            }
+            if (isFirst) {
+                isFirst = false;
+            }
         })
     }
 
     return {
+        updateUserState,
+        subscribePlayerState,
         onDisconnectListener,
     };
 }
