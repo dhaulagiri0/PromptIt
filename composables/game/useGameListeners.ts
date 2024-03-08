@@ -24,10 +24,11 @@ import {
     ):Promise<Unsubscribe> {
         const { hostId } = storeToRefs(gameStore)
         const q = query(collection(db, "games"), where("gameId", "==", gameId));
-        return onSnapshot(
+        const unsubscribe = onSnapshot(
             q,
             (snapshot) => { 
                 snapshot.docChanges().forEach((change) => {
+                    gameStore.updateState(change.doc.data());
                     if (user["uid"] == hostId.value) {
                         const players = change.doc.data()["players"]
                         for (let key in players) {
@@ -40,13 +41,13 @@ import {
                         if (!(user["uid"] in players)) {
                             // kicked
                             callback();
-                            return
+                            unsubscribe();
                         }
                     } 
-                    gameStore.updateState(change.doc.data());
                 })
             }
         );
+        return unsubscribe;
     }
 
     return {
