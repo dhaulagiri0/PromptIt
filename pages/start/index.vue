@@ -39,15 +39,20 @@
             border-4
             text-offwhite
             font-gohu
-            text-3xl
+            text-xl
             "
             >
-            <div class="flex flex-col w-96 justify-between place-items-center">
+            <div class="flex flex-col w-96 justify-between">
               <h3>WHAT TO DO:</h3>
               <div></div>
-              <h3>GENERAL TASKS:</h3>
+              <br>
+              <h3 class="text-richblue">General Tasks:</h3>
               <div></div>
-              <h3>INDIVIDUAL TASKS:</h3>
+              <br>
+              <!--TODO: Change colour to actual yellow-->
+              <h3 class="text-grapefruit">Individual Tasks:</h3>
+              <br>
+              <h3 class="text-richred">Watch out for the saboteur!</h3>
               <div></div>
             </div>
           </div>
