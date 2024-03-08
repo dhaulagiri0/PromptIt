@@ -2,7 +2,7 @@
   <div
     id="login"
     class="bg-gradient-to-tr from-richpink to-richblue h-screen font-gohu overflow-x-hidden flex flex-col">
-    <Header class="absolute mt-4 ml-6"/>
+    <Header backVisible="true" :goBack="goBack"/>
     <main class="grow flex flex-row justify-center">
       <div v-if="hostId != undefined" class="flex items-center gap-16">
         <div class="space-y-4 max-w-80">
@@ -68,45 +68,59 @@
 
 
 <script setup lang="ts">
-  const { createGame } = useLobby()
-  const { subscribeGameState } = useGameListeners()
-  import { storeToRefs } from 'pinia'
-  const router = useRouter()
-  const route = useRoute()
+  const { createGame } = useLobby();
+  const { subscribeGameState } = useGameListeners();
+  import { storeToRefs } from 'pinia';
+  const router = useRouter();
+  const route = useRoute();
   const { getCurrentUser } = useAuth();
+  const { updateUserState } = useUserState();
   import { type User } from 'firebase/auth';
-  import { useGameStore } from '~/stores/game' 
+  import { type Unsubscribe } from 'firebase/firestore';
+  import { useGameStore } from '~/stores/game'; 
   const user = ref<User | null>(null);
   const userName = ref<string | null>(null);
   const userId = ref<string | null>(null);
-  const gameStore = useGameStore()
+  const gameStore = useGameStore();
   const gameId = route.params.id;
-  const { hostId, players, gameStatus } = storeToRefs(gameStore)
-  const isHost = ref(userId == hostId)
+  const { hostId, players, gameStatus } = storeToRefs(gameStore);
+  const isHost = ref(userId == hostId);
+  var unsub:Promise<Unsubscribe>;
 
   onBeforeMount(async () => {
-    const unsub = subscribeGameState(gameId, gameStore.updateState)
-    const _user = await getCurrentUser()
+    const _user = await getCurrentUser();
     if (_user) {
-      user.value = _user
+      user.value = _user;
     } else {
-      router.push(`/`)
+      router.push(`/`);
     }
-    userName.value = _user["displayName"]
-    userId.value = _user["uid"]
+    userName.value = _user["displayName"];
+    userId.value = _user["uid"];
+
+    updateUserState(userId.value, "ingame");
 
     if (userId.value == hostId.value) {
-      console.log("is host")
+      console.log("is host");
       // attach listener on all players
       
     } else {
-      console.log("not host")
+      console.log("not host");
       // attach listener to host
     }
+    unsub = subscribeGameState(_user, gameId, gameStore);
   })
 
   async function copyGameId() {
     await navigator.clipboard.writeText(gameId);
+  }
+
+  async function goBack() {
+    console.log(unsub)
+    if (unsub != null) {
+      console.log("unsubbed");
+      (await unsub)();
+    }
+    router.push("/");
   }
 
 </script>
