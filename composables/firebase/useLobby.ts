@@ -42,9 +42,9 @@ export default function() {
         gameId: gameId,
         hostId: userId,
         players: {
-          [userId] : {
-            name : userName,
-            status : "alive",
+          [userId]: {
+            name: userName,
+            status: "alive",
             id: userId,
           }
         },
@@ -61,11 +61,11 @@ export default function() {
       const game = doc.data();
       if (game) {
         callback(game as Game);
-  // async function subscribeGame(gameId: String, callback: (game: Game) => void): Unsubscribe {
-  //   return onSnapshot(doc(db, "games", gameId), doc => {
-  //     const game = doc.data();
-  //     if (game) {
-  //       callback(game as Game);
+        // async function subscribeGame(gameId: String, callback: (game: Game) => void): Unsubscribe {
+        //   return onSnapshot(doc(db, "games", gameId), doc => {
+        //     const game = doc.data();
+        //     if (game) {
+        //       callback(game as Game);
       }
     });
   }
@@ -76,18 +76,18 @@ export default function() {
       const docRef = doc(db, "games", gameId);
       if (docSnap != null) {
         await setDoc(docRef, {
-          "players" : {
-            [userId] : {
-              id : userId,
-              name : userName,
-              status : "alive",
+          "players": {
+            [userId]: {
+              id: userId,
+              name: userName,
+              status: "alive",
             }
           }
         }, { merge: true });
 
         return "success";
       }
-    } catch(error) {
+    } catch (error) {
       console.log(error);
       return null;
     }

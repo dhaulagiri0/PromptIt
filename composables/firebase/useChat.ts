@@ -12,7 +12,7 @@ export default function() {
   const { $firestore: db } = useNuxtApp();
   const { getCurrentUser } = useAuth();
 
-  async function subscribeMessages(chatId: String, 
+  async function subscribeMessages(chatId: String,
     callback: (messages: Message[]) => void
   ): Promise<Unsubscribe> {
     const messagesRef = collection(db, 'messages/PersonalChats/' + chatId);

@@ -5,7 +5,7 @@ import { resolve } from 'path'
 export default defineNuxtConfig({
   devtools: { enabled: true },
   alias: {
-    '@' : resolve(__dirname, '/') 
+    '@': resolve(__dirname, '/')
   },
   css: ['~/assets/css/main.css'],
   postcss: {
@@ -15,7 +15,7 @@ export default defineNuxtConfig({
     },
   },
   modules: [// needed
-  '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt', "@nuxt/image"],
+    '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt', "@nuxt/image"],
   components: [
     '~/components',
     {
@@ -32,7 +32,10 @@ export default defineNuxtConfig({
     ]
   },
   runtimeConfig: {
+    webhook_url: process.env.WEBHOOK_URL,
     public: {
+      stability_api_key: process.env.STABILITY_APIKEY,
+      perplexity_api_key: process.env.PERPLEXITY_APIKEY,
       firebase: {
         apiKey: process.env.FIREBASE_APIKEY,
         authDomain: process.env.FIREBASE_AUTHDOMAIN,
@@ -40,9 +43,8 @@ export default defineNuxtConfig({
         storageBucket: process.env.FIREBASE_STORAGEBUCKET,
         messagingSenderId: process.env.FIREBASE_MESSAGINGSENDERID,
         appId: process.env.FIREBASE_APPID,
-        databaseURL:"https://promptit-cbdaa-default-rtdb.europe-west1.firebasedatabase.app",
+        databaseURL: "https://promptit-cbdaa-default-rtdb.europe-west1.firebasedatabase.app",
       },
-      webhook_url: process.env.WEBHOOK_URL,
     }
   },
   hooks: {
@@ -56,7 +58,29 @@ export default defineNuxtConfig({
         pages.splice(pages.indexOf(page), 1);
       });
     }
+  },
+  nitro : {
+    routeRules: {
+      "/api/perplexity": { proxy: "https://api.perplexity.ai/chat/completions" },
+      "/api/stability": { proxy: "https://api.stability.ai" }
+    }
   }
+  // vite: {
+  //   server: {
+  //     proxy: {
+  //       "/api/perplexity": {
+  //         target: "https://api.perplexity.ai/chat/completions",
+  //         changeOrigin: true,
+  //         rewrite: (path) => "https://api.perplexity.ai/chat/completions"
+  //       },
+  //       "/api/stability": {
+  //         target: "https://api.stability.ai",
+  //         changeOrigin: true,
+  //         rewrite: (path) => path.replace(/^\/api\/stability/, '')
+  //       }
+  //     }
+  //   }
+  // }
   // app: {
   //   head: {
   //     link: [
