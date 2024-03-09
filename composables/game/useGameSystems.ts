@@ -73,7 +73,60 @@ export default function() {
   async function generateInitialImage(
     gameId: String, imagePrompt: string, roundNum: number
   ) {
-    const user = await getCurrentUser();
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${stabilityApiKey}`,
+      },
+      body: JSON.stringify({
+        text_prompts: [
+          {
+            text: imagePrompt,
+          },
+        ],
+        cfg_scale: 7,
+        height: 512,
+        width: 512,
+        steps: 20,
+        samples: 1,
+      }),
+    };
+
+    const { data } = await useFetch('https://api.stability.ai/v1/generation/stable-diffusion-v1-6/text-to-image', options);
+
+    interface GenerationResponse {
+      artifacts: Array<{
+        base64: string
+        seed: number
+        finishReason: string
+      }>
+    }
+    console.log(data.value);
+
+    const responseJSON = (await data.value) as GenerationResponse
+    const image = Buffer.from(responseJSON.artifacts[0].base64, 'base64');
+
+    try {
+      const imageRef = ref(storage, `Images/${gameId}/${config.public.aiName}-${roundNum}.png`);
+      const remoteRef = await uploadBytes(imageRef, image);
+      console.log("image: ", image);
+      console.log(responseJSON);
+      return remoteRef.metadata.fullPath
+    } catch (err: any) {
+      throw createError({
+        statusCode: err.statusCode || 500,
+        statusMessage: err.message,
+        fatal: true
+      });
+    }
+  }
+
+  async function generateNextImage(
+    gameId: String, imagePrompt: string, roundNum: number
+  ) {
+    const user = getCurrentUser();
     const options = {
       method: 'POST',
       headers: {
@@ -163,5 +216,6 @@ export default function() {
     getNextImage,
     generateInitialPrompt,
     generateInitialImage,
+    generateNextImage,
   };
 }
