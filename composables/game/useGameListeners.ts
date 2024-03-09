@@ -37,8 +37,7 @@ import { AIMessage } from '../useTypes';
 
     async function listenLiveMessage(
         gameId: string,
-        obfuscate: boolean = true,
-        callback: (message: AIMessage, messages: AIMessage[]) => void,
+        callback: (message: AIMessage, messages: AIMessage[], unObfuscated: AIMessage[]) => void,
     ):Promise<Unsubscribe> {
         const messagesRef = collection(db, 'messages/AIChats/' + gameId);
         const q = query(messagesRef, orderBy('createdAt'));
@@ -48,13 +47,13 @@ import { AIMessage } from '../useTypes';
               id: doc.id,
               ...doc.data()
             })).reverse();
-            if (obfuscate) {
-                messages.map((message) => {
-                    // message.text = message.text.split(" ").map((str) => obfuscater(str, "*")).join(" ");
-                    message.text = message.text
-                })
-            }
-            callback(messages[messages.length - 1], messages);
+            // messages.map((message) => {
+            //     message.text = message.text.split(" ").map((str) => obfuscater(str, "*")).join(" ");
+            // })
+            messages.map((message) => {
+                message.text = message.text;
+            })
+            callback(messages[0], messages);
         });
     }
 
@@ -128,6 +127,7 @@ import { AIMessage } from '../useTypes';
   }
 
     return {
+        obfuscater,
         updateGameState,
         subscribeGameState,
         sendLiveMessage,

@@ -3,6 +3,9 @@
         <Header back-visible="true" />
         <main class="grow flex flex-row justify-center space-x-4 px-4 pb-4 h-5/6">
             <div class="flex flex-col basis-1/4 h-fill space-y-4">
+                {{ roundNum }}
+                {{ currentPlayerId }}
+                {{ onTurn }}
                 <WindowCard class="flex-1 flex-col" headerText="Team Chat">
                     <div id="con" class="h-full">
                         <div class="h-full">
@@ -149,10 +152,10 @@
                                         text-ellipsis
                                         "
                                         :class="[
-                                            `${ message.sentBy == aiName ? 'text-2xl border-black text-richblue p-0' : 'text-s text-offwhite border-richpink border-4 p-3' }`,
+                                            `${ message.sentBy == aiName ? 'text-2xl border-black text-richblue p-0' : 'text-s text-richpink p-0' }`,
                                         ]"
                                         v-if="(user != null && message.sentBy != user.uid)">
-                                        {{ message.userName }}
+                                        {{ message.userName}}
                                     </div>
                                     <div class="
                                         w-fit
@@ -164,20 +167,24 @@
                                         text-wrap
                                         "
                                         :class="[
-                                            `${user != null && message.sentBy != user.uid ? 'text-black' : 'justify-self-end bg-richblue text-offwhite'}`,
-                                            `${user != null && message.sentBy == aiName ? 'text-m bg-black text-offwhite p-1 pb-8' : 'bg-richpink text-s p-3' }`,
+                                            `${user != null && message.sentBy != user.uid ? 'text-offwhite' : 'justify-self-end bg-richblue text-offwhite'}`,
+                                            `${user != null && message.sentBy == aiName ? 'text-m bg-black text-offwhite p-1 pb-8' : 'text-s p-3 mb-8' }`,
                                         ]">
-                                        <p class="w-fill text-wrap">{{ message.text }}</p>  
+                                        <p class="w-fill text-wrap" v-if="hasGone || (onTurn && (index == renderImgIndex || message.sentBy == user.uid))">
+                                            {{ message.text }}
+                                        </p> 
+                                        <p class="w-fill text-wrap" v-else>{{ message.text.split(" ").map((str) => obfuscater(str, "*")).join(" ") }}</p> 
                                     </div>
                                     <div class="
                                         w-fit
                                         rounded-vl
                                         overflow-hidden
                                         "
-                                        v-if="message.image && (hasGone || (onTurn && index == allMessages.length - 1))"
-                                        :class="`${user != null && message.sentBy != user.uid ? 'bg-offwhite' : 'justify-self-end bg-richblue text-offwhite'}`"                                                >
+                                        v-if="message.image && (hasGone || (onTurn && index == renderImgIndex))"
+                                        :class="`${user != null && message.sentBy != user.uid ? 'bg-offwhite' : 'justify-self-end bg-richblue text-offwhite'}`">
                                         <img :src="message.image"/>
                                     </div>
+                                    <!-- v-if="message.image && (((hasGone || (onTurn && index == aiMessages.length - 1))) || (onTurn && aiMessages[index - 1].sentBy == user.uid && index == aiMessages.length - 2))" -->
                                 </div>
                             </div>
                         </div>
@@ -292,7 +299,7 @@
 <script setup lang="ts">
 import { useGameStore } from '~/stores/game'; 
 const { subscribeMessages, sendMessage } = useChat();
-const { updateGameState, listenLiveMessage, sendLiveMessage } = useGameListeners();
+const { updateGameState, listenLiveMessage, sendLiveMessage, obfuscater } = useGameListeners();
 import { onBeforeMount } from 'vue';
 const { generateNextPlayers, setGameProgress } = useGameUtils();
 const { getCurrentUser } = useAuth();
@@ -301,19 +308,20 @@ const { getNextImage, generateInitialPrompt, rateCreativity, rateCloseNess,} = u
 const gameStore = useGameStore();
 const user = ref(null);
 const newMessage = ref<string>('');
-const newPrompt = ref<string>("")
-const enableMainChat = ref(false)
+const newPrompt = ref<string>("");
+const enableMainChat = ref(false);
 const router = useRouter();
 var lastMessage = ref("");
-var lastImage:string = ""
-var lastRound = 0
+var lastImage:string = "";
+var lastRound = 0;
+const renderImgIndex = ref(-1);
 var promptWatcher = null;
 import { onMounted, watch } from 'vue';
 import type { Unsubscribe } from 'firebase/auth';
 import useGameSystems from '~/composables/game/useGameSystems';
 import useChat from '~/composables/firebase/useChat';
 const config = useRuntimeConfig();
-const aiName = config.public.aiName
+const aiName = config.public.aiName;
 
 export type AIMessage = {
   text: string;
@@ -328,7 +336,10 @@ const { hostId, players, generalTasks, indivTasks, currentPlayerId, roundNum, ga
 
 const allMessages = ref<AIMessage[]>([]);
 const aiMessages = ref<AIMessage[]>([]);
+const unObfuscatedAiMessages = ref<AIMessage[]>([]);
 
+var hasGone = ref(false);
+var onTurn = ref(false);
 
 onBeforeMount(async () => {
     const _user = await getCurrentUser();
@@ -345,20 +356,54 @@ onBeforeMount(async () => {
             // console.log(messages.map((message: AIMessage) => message.text));
             allMessages.value = []
             messages.map(
-                (message: AIMessage) => { 
+                (message: AIMessage) => {  
                     allMessages.value.push({
                         text:message["text"],
                         createdAt:message["createdAt"],
                         sentBy:message["sentBy"],
                         userName:message["userName"],
                     });
-                });
-    });
+                }
+            );
+        });
     // update current game state
     if (user.value.uid == hostId.value) {
         await updateGameState(gameId.value, "started");
         handleGameHost()
     }
+
+    watch(currentPlayerId, async () => {
+
+        if (promptWatcher != null) {
+            promptWatcher();
+            promptWatcher = null;
+        }
+        if (lastRound != roundNum.value) {
+            hasGone.value = false;
+            lastRound = roundNum.value
+        }
+        // if(prevUnsub) {
+        //     prevUnsub();
+        // }
+
+        if (currentPlayerId.value == user.value.uid) {
+            onTurn.value = true;
+            enableMainChat.value = true;
+            handlePromptMessage();
+            console.log("my turn");
+            await delay(30000);
+            enableMainChat.value = false;
+            if(!hasGone.value) {
+                await sendLiveMessage(gameId.value, user.value, "I give up!", roundNum.value);
+                hasGone.value = true;
+                await delay(5000);
+            }
+        } else {
+            console.log("not my turn");
+            enableMainChat.value = false;
+            onTurn.value = false;
+        }
+    })
 })
 
 async function handleSendMessage() {
@@ -370,27 +415,30 @@ function delay(ms: number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
 }
 
-var hasGone = ref(false);
-var onTurn = ref(false);
-
 var prevUnsub = await listenLiveMessage(
-        gameId.value, 
-        true,
+        gameId.value,
         (message, messages) => {
             lastMessage.value = message.text
             aiMessages.value = []
             messages.map(
                 (message: AIMessage) => { 
-                    aiMessages.value.push({
-                        text:message["text"],
-                        createdAt:message["createdAt"],
-                        sentBy:message["sentBy"],
-                        userName:message["userName"],
-                        image: message["image"],
-                        roundNum: message["roundNum"],
-                    });
+                    if (true) {
+                        aiMessages.value.push({
+                            text:message["text"],
+                            createdAt:message["createdAt"],
+                            sentBy:message["sentBy"],
+                            userName:message["userName"],
+                            image: message["image"],
+                            roundNum: message["roundNum"],
+                        });
+                    }
                 });
-        })
+            if (messages[0].image != ""){
+                renderImgIndex.value = 0;
+            } else if (messages[1].image != "") {
+                renderImgIndex.value = 1;
+            }
+        });
 
 async function submitPrompt() {
     if (promptWatcher != null) {
@@ -399,7 +447,9 @@ async function submitPrompt() {
     }
     sendLiveMessage(gameId.value, user.value, newPrompt.value, roundNum.value);
     newPrompt.value = "";
-    onTurn = false;
+    onTurn.value = false;
+    hasGone.value = true;
+    enableMainChat.value = false;
 }
 
 async function handlePromptMessage() {
@@ -430,8 +480,9 @@ async function handleGameHost() {
         var prevPrompt = await generateInitialPrompt();
         var prevImage = await getNextImage(prevPrompt);
         
-        await sendAIMessage(gameId.value, "Original prompt: " + prevPrompt, prevImage.toString(), round)
         await setGameProgress(gameId.value, nextFirstPlayerId, round);
+        await sendAIMessage(gameId.value, "Original prompt: " + prevPrompt, prevImage.toString(), round)
+        console.log(nextFirstPlayerId + "'s round: " + round);
         await delay(30000);
         console.log(nextFirstPlayerId + " finished from round: " + round);
 
@@ -446,6 +497,7 @@ async function handleGameHost() {
         for (var key of shuffledKeys) {
             if (key != nextLastPlayerId && key != nextFirstPlayerId) {
                 await setGameProgress(gameId.value, key, round);
+                console.log(key + "'s round: " + round);
                 await delay(30000);
                 console.log("another player finish from round: " + round);
 
@@ -453,11 +505,12 @@ async function handleGameHost() {
                 await delay(5000);
                 prevPrompt = lastMessage.value;
                 prevImage = await getNextImage(prevPrompt);
-                await sendAIMessage(gameId.value, nextFirstPlayerId + " generated the following image: ", prevImage.toString(), round);
+                await sendAIMessage(gameId.value, key + " generated the following image: ", prevImage.toString(), round);
             }
         }
 
         await setGameProgress(gameId.value, nextLastPlayerId, round);
+        console.log(nextLastPlayerId + "'s round: " + round);
         await delay(30000);
         console.log("last player finish from round: " + round);
 
@@ -465,7 +518,7 @@ async function handleGameHost() {
         await delay(5000);
         prevPrompt = lastMessage.value;
         prevImage = await getNextImage(prevPrompt);
-        await sendAIMessage(gameId.value, nextFirstPlayerId + " generated the following image: ", prevImage.toString(), round);
+        await sendAIMessage(gameId.value, nextLastPlayerId + " generated the following image: ", prevImage.toString(), round);
 
         // deciding on the next pair of first and last players
         const _players = generateNextPlayers(firstPlayers, lastPlayer, players.value);
@@ -473,40 +526,17 @@ async function handleGameHost() {
         nextLastPlayerId = _players[1];
         firstPlayers.push(nextFirstPlayerId);
         lastPlayer.push(nextLastPlayerId);
+
+        // triggers currentPlayerIdChange
+        await setGameProgress(gameId.value, "1", round);
+        await sendAIMessage(gameId.value, nextLastPlayerId + "NOW FOR ROUND TWO!", "", round);
+        console.log("reset id " + round);
+        // slight delay to make sure the message is updated
+        await delay(5000);
     }
 
+    console.log("game ended!")
     await updateGameState(gameId.value, "ended");
 }
-    
-watch(currentPlayerId, async () => {
-
-    if (promptWatcher != null) {
-        promptWatcher();
-        promptWatcher = null;
-    }
-    if (lastRound != roundNum.value) {
-        hasGone.value = false;
-    }
-    onTurn.value = false;
-    // if(prevUnsub) {
-    //     prevUnsub();
-    // }
-
-    if (currentPlayerId.value == user.value.uid) {
-        onTurn.value = true;
-        // do game stuff
-        // enable main chat interaction
-        // update live message
-        // send message to ai
-        // if message is empty propagate previously generated image
-        enableMainChat.value = true;
-        handlePromptMessage();
-        console.log("my turn");
-        hasGone.value = true;
-    } else {
-        console.log("not my turn");
-        enableMainChat.value = false;
-    }
-})
 
 </script>
