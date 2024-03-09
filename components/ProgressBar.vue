@@ -1,5 +1,8 @@
 <template>
-  <p v-if="props.roundNumber" class="ml-2">{{ props.roundNumber }}</p>
+  <div class="flex flex-row justify-between mr-[55px]">
+    <p v-if="props.roundNumber" class="text-xl text-white ml-2 text-nowrap">Round: {{ props.roundNumber }}</p>
+    <p v-if="props.currPlayer" class="text-xl text-white ml-2 text-nowrap">{{ props.currPlayer }}'s Turn</p>
+  </div>
   <div class="flex place-items-center">
     <div id="progress-bar" class="rounded-full w-full border-4 border-black bg-offwhite">
       <div :key="progress" :class="`bg-${props.color}`" class="h-10 rounded-full w-full outline outline-4"
@@ -18,6 +21,7 @@ type Props = {
   duration: number;
   color: string;
   roundNumber?: string;
+  currPlayer?: string;
 }
 const props = withDefaults(defineProps<Props>(), {
   duration: 30,
@@ -30,7 +34,7 @@ onBeforeMount(() => {
   let interval = setInterval(() => {
       if (spentDuration.value < props.duration) {
         spentDuration.value += 1
-        progress.value = parseInt((spentDuration.value / props.duration) * 100);
+        progress.value = parseInt(((props.duration - spentDuration.value) / props.duration) * 100);
         console.log("Progress = ", parseInt(progress.value));
       }
   }, 1000)
