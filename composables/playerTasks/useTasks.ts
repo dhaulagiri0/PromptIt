@@ -233,6 +233,6 @@ export default function() {
         updateTaskStatus,
         addIndividualTask,
         retrievePlayers,
-        addGeneralTasks,
+        addGeneralTasks
     }
 }

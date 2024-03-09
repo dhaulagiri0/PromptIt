@@ -22,15 +22,6 @@ export default function() {
   const db = nuxtApp.$firestore;
   const auth = nuxtApp.$auth;
 
-  // async function subscribeGame(gameId: String, callback: (game: Game) => void): Unsubscribe {
-  //   return onSnapshot(doc(db, "games", gameId), doc => {
-  //     const game = doc.data();
-  //     if (game) {
-  //       callback(game as Game);
-  //     }
-  //   });
-  // }
-
   async function deleteGame(gameId: string) {
     try {
       const docRef = doc(db, "games", gameId);
@@ -65,6 +56,20 @@ export default function() {
     }
   }
 
+  async function subscribeGame(gameId: String, callback: (game: Game) => void): Unsubscribe {
+    return onSnapshot(doc(db, "games", gameId), doc => {
+      const game = doc.data();
+      if (game) {
+        callback(game as Game);
+  // async function subscribeGame(gameId: String, callback: (game: Game) => void): Unsubscribe {
+  //   return onSnapshot(doc(db, "games", gameId), doc => {
+  //     const game = doc.data();
+  //     if (game) {
+  //       callback(game as Game);
+      }
+    });
+  }
+
   async function joinGame(gameId: string, userId: string, userName: string) {
     try {
       const docSnap = await checkGame(gameId);
@@ -91,6 +96,6 @@ export default function() {
   return {
     deleteGame,
     createGame,
-    joinGame,
+    joinGame
   };
 }

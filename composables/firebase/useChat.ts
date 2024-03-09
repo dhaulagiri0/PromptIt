@@ -28,12 +28,8 @@ export default function() {
   }
 
   async function sendMessage(message: string, chatId: string) {
-    // const user = await getCurrentUser();
-    // if (!user) {
-    //   throw new Error('User not logged in');
-    // }
     if (!message) {
-      return
+      return;
     }
 
     try {
