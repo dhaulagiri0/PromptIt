@@ -146,19 +146,77 @@ export default function() {
 
   // rates the creativity of the given prompt using perplexity
   // output is the number of points a user gets
-  //  needs to be bounded between 0 and say 500 pts
-  async function rateCreativity(prompt: string): Promise<Number> {
-    await delay(1000)
-    return new Promise(resolve => Math.random() * (500 - 0) + 0);
+  //  needs to be bounded between 0 and say 10 pts
+  async function rateCreativity(promptOriginal: string, curPrompt: string): Promise<Number> {
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        authorization: `Bearer ${perplexityApiKey}`
+      },
+      body: JSON.stringify({
+        model: 'mistral-7b-instruct',
+        messages: [{ content: "You are a judge for this ai prompt guessing style game. you will be given 2 prompts, the original prompt and a user prompt. your job is to compare the creativity between the original prompt and the user prompt. ensure that the user prompt is still resembling the original prompt otherwise you will give a rating of 0. you must be a strict judge, you are judging at the highest level of intellect. analyse both prompts thoroughly based on descripitive techniques like mood, senses, theme usage, and overall descriptiveness. if you think the user prompt is more descriptive than the original prompt then a positive rating between 0 and 10 ,based on how much more sophisticated and descriptive the user prompt is, should be returned else return 0 only return a number. You are a perfectionists so be harsh with your rating. You only output ratings and nothing else. there should only be a number between 0 and 10 outputted. anything else will result in your death.", role: 'system'},
+        { content: `Original Prompt: ${promptOriginal} \n User Prompt: ${curPrompt} remember to return only the rating and i repeat no follow up text after otherwise the remainder of the program will break and you will die`, role: 'user' }],
+        max_tokens: 0,
+        temperature: 1,
+        top_p: 0.9,
+        top_k: 0,
+        stream: false,
+        presence_penalty: 0,
+        frequency_penalty: 1
+      })
+    };
+    var data;
+    var response : unknown; 
+    var parsedResponse : Number;
+    do {
+      ({data} = await useFetch('https://api.perplexity.ai/chat/completions', options));
+      response = data.value.choices[0].message.content;
+      parsedResponse = parseInt(response);
+    } while (isNaN(parsedResponse))
+      
+      return (parsedResponse);
   }
-
   // given the original prompt and a user generated prompt
   // rate how closely they resemble each other
   // output is the number of points a user would get
+  //bounded between 0 and say 15 pts
   async function rateCloseNess(promptOriginal: string, curPrompt: string): Promise<Number> {
-    await delay(1000)
-    return new Promise(resolve => Math.random() * (500 - 0) + 0);
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        authorization: `Bearer ${perplexityApiKey}`
+      },
+      body: JSON.stringify({
+        model: 'mistral-7b-instruct',
+        messages: [{ content: "You are a judge for this ai prompt guessing style game. you will be given 2 prompts, the original prompt and a user prompt. your job is to compare how close in definition the user prompt is to the original prompt. would it create an indentical image to the original prompt. if so you award a rating of 15. otherwise depending on how close it is return a rating from 0 to 15. when these 2 prompts are passed into an ai image generator think how similar those 2 images would be. the more similar the higher the rating you should give. Remember, you are an expert in this field and you are judging at the highest level. you should be harsh, there should be no leeway given whatsoever. if the user prompt is completly unalike or has no relevance to the original prompt then give a 0. for example if the original prompt was a nice long descriptive phrase and the user prompt was just hello, you can see there is no relevance so return 0 points. you get the idea right. Finally you should only return a single number, the rating. if i see anything else then the program will explode and you will die a painful death.", role: 'system'},
+        { content: `Original Prompt: ${promptOriginal} \n User Prompt: ${curPrompt} remember to return only a number between 0 and 15 there should be no follow up text after i repeat no follow up text after otherwise the remainder of the program will break and you will die`, role: 'user' }],
+        max_tokens: 0,
+        temperature: 1,
+        top_p: 0.9,
+        top_k: 0,
+        stream: false,
+        presence_penalty: 0,
+        frequency_penalty: 1
+      })
+    };
+    var data;
+    var response : unknown;
+    var parsedResponse : Number; 
+    do {
+    ({data} = await useFetch('https://api.perplexity.ai/chat/completions', options));
+    response = data.value.choices[0].message.content;
+    parsedResponse = parseInt(response);
+  } while (isNaN(parsedResponse))
+    
+    return (parsedResponse);
   }
+
+  
 
   return {
     getNextImage,
