@@ -23,8 +23,8 @@
       <img class="h-20" src="~/assets/images/logo-png.png">
     </div>
     <div class="flex-1 w-fill" />
-    <div class="flex-none h-20" :class="[backVisible ? '' : 'invisible']" @click="goBack">
-      <IconsBack />
+    <div class="flex-none my-auto" :class="[backVisible ? '' : 'invisible']" @click="goBack">
+      <IconsBack class="my-auto" />
     </div>
   </div>
 </template>

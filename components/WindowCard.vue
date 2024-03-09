@@ -23,7 +23,7 @@
     overflow-hidden
     drop-shadow-solid
   ">
-    <div class="block">
+    <div class="block h-fll">
       <div class="
         flex
         header 
@@ -41,7 +41,7 @@
           <IconsCross class="inline"/>
         </div>
       </div>
-      <div class="space-y-3 content-container p-4">
+      <div class="space-y-3 p-4 h-full">
         <slot />
       </div>
     </div>

@@ -6,8 +6,10 @@ import {
     query,
     orderBy,
     where,
+    updateDoc,
     type Unsubscribe,
-    type DocumentData
+    type DocumentData,
+    setDoc
   } from 'firebase/firestore'
   import { type User } from 'firebase/auth';
   import { storeToRefs } from 'pinia';
@@ -15,6 +17,15 @@ import {
   export default function() {
     const { $firestore: db } = useNuxtApp();
     const { subscribePlayerState } = useUserState();
+
+    async function updateGameState(
+        gameId: string,
+        newState: string,
+    ) {
+        const gameRef = doc(db, "games", gameId);
+        await setDoc(gameRef, { state: newState,}, { merge: true });
+        return
+    }
 
     async function subscribeGameState(
         user: User,
@@ -51,6 +62,7 @@ import {
     }
 
     return {
+        updateGameState,
         subscribeGameState,
     };
   }

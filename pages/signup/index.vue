@@ -20,6 +20,24 @@
             w-full
             "
             type="email"
+            v-model="credentials.username"
+            placeholder="Username_"
+            required
+            />
+          <input class="
+            border-white
+            mt-2
+            rounded-vl
+            overflow-hidden
+            p-3
+            px-5
+            bg-black
+            border-4
+            text-offwhite
+            text-xl
+            w-full
+            "
+            type="email"
             v-model="credentials.email"
             placeholder="Email_"
             required
@@ -40,6 +58,24 @@
             type="password"
             v-model="credentials.password"
             placeholder="Password_"
+            required
+            />
+          <input class="
+            border-white
+            rounded-vl
+            mt-4
+            overflow-hidden
+            p-3
+            px-5
+            bg-black
+            border-4
+            text-offwhite
+            text-xl
+            w-full
+            "
+            type="password"
+            v-model="credentials.confirmPassword"
+            placeholder="Confirm Password_"
             required
             />
           <ThiccButton class="mt-4 w-full bg-white text-black cursor-pointer" type="submit" @click="handleSignUp">
@@ -70,16 +106,23 @@ const showError = ref(false)
 const errorMessage = ref<string>("")
 
 const credentials = reactive({
+  username: '',
   email: '',
-  password: ''
+  password: '',
+  confirmPassword: ''
 })
 
 async function handleSignUp() {
   showError.value = false;
   console.log("Email: ", credentials.email, " Password: ", credentials.password);
-  if (!credentials.email || !credentials.password) {
+  if (!credentials.email || !credentials.password || !credentials.confirmPassword || !credentials.username) {
     showError.value = true;
-    errorMessage.value = "Please enter an email and password";
+    errorMessage.value = "Please enter all fields";
+  }
+  if (credentials.password !== credentials.confirmPassword) {
+    showError.value = true;
+    errorMessage.value = "Passwords do not match";
+    return;
   }
   if (!validatePassword(credentials.password)) {
     showError.value = true;
@@ -88,7 +131,7 @@ async function handleSignUp() {
   }
   let user: User | undefined;
   try {
-    user = await createUser(credentials.email, credentials.password);
+    user = await createUser(credentials.email, credentials.password, credentials.username);
     if (user) {
       router.push('/');
     }

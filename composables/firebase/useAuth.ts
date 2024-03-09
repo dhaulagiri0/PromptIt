@@ -7,8 +7,13 @@ import {
   signInWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
-  signInWithPopup
+  signInWithPopup,
 } from "firebase/auth"
+
+import {
+  doc,
+  setDoc,
+} from "firebase/firestore"
 
 export default function() {
   const nuxtApp = useNuxtApp();
@@ -37,7 +42,7 @@ export default function() {
     );
   }
 
-  async function createUser(email: string, password: string): Promise<User> {
+  async function createUser(email: string, password: string, username: string): Promise<User> {
     try {
       if (!validatePassword(password))
         throw new Error("Invalid Password");
@@ -46,6 +51,10 @@ export default function() {
         email,
         password
       );
+      const newAccount = await setDoc(doc(db, `accounts/${userCred.user.uid}`), {
+        username,
+        email,
+      });
       return userCred.user;
     } catch (err: any) {
       throw createError({
@@ -61,8 +70,20 @@ export default function() {
   }
 
   async function logInUserWithGoogle() {
-    const googleProvider = await new GoogleAuthProvider();
-    await signInWithPopup(auth, googleProvider);
+    try {
+      const googleProvider = await new GoogleAuthProvider();
+      const user = await signInWithPopup(auth, googleProvider);
+      const newAccount = await setDoc(doc(db, `accounts/${user.user.uid}`), {
+        username:  user.user.displayName,
+        email:  user.user.email
+      });
+    } catch (e: any) {
+      throw createError({
+        message: e.message,
+        statusCode: e.code,
+        fatal: true
+      });
+    }
   }
 
   async function logout() {

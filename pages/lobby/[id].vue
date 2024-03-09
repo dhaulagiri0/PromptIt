@@ -2,7 +2,7 @@
   <div
     id="login"
     class="bg-gradient-to-tr from-richpink to-richblue h-screen font-gohu overflow-x-hidden flex flex-col">
-    <Header backVisible="true" :goBack="goBack"/>
+    <Header backVisible="true" :goBack="goBack" />
     <main class="grow flex flex-row justify-center">
       <div v-if="hostId != undefined" class="flex items-center gap-16">
         <div class="space-y-4 max-w-80">
@@ -49,7 +49,7 @@
             </div>
           </div>
           <h3 class="text-white text-xl">Share this code with your friends!</h3>
-          <ThiccButton v-if="hostId == userId" class="ml-auto w-fit text-black bg-white place-self-end">
+          <ThiccButton v-if="hostId == userId" class="ml-auto w-fit text-black bg-white place-self-end" @click="handleGameStart">
             Start Game
           </ThiccButton>
         </div>
@@ -73,7 +73,8 @@
 
 <script setup lang="ts">
   const { deleteGame } = useLobby();
-  const { subscribeGameState } = useGameListeners();
+  const { subscribeGameState, updateGameState } = useGameListeners();
+  const { addGeneralTasks, addIndividualTask } = useTasks();
   import { storeToRefs } from 'pinia';
   const router = useRouter();
   const route = useRoute();
@@ -82,7 +83,8 @@
   import { type User } from 'firebase/auth';
   import { type Unsubscribe } from 'firebase/firestore';
   import { useGameStore } from '~/stores/game'; 
-  import { onMounted } from 'vue';
+  import { onMounted, watch } from 'vue';
+import useTasks from '~/composables/playerTasks/useTasks';
   const user = ref<User | null>(null);
   const userName = ref<string | null>(null);
   const userId = ref<string | null>(null);
@@ -111,14 +113,16 @@
       } else {
         console.log("not host");
         subscribeHostState(hostId.value, hostLeftCall);
+        // listen to game state if not host
+        watch(gameStatus, () => {
+          if (gameStatus.value == "starting") {
+            router.push("/start");
+          }
+        })
       }
     })  
   })
 
-  function delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
-  }
-  
   async function copyGameId() {
     await navigator.clipboard.writeText(gameId);
   }
@@ -134,10 +138,24 @@
     if (userId.value == hostId.value) {
       deleteGame(gameId);
     }
+    await updateUserState(userId.value, "online");
     router.push("/");
   }
+
   async function kick(playerId: string) {
     kickPlayer(playerId, gameId);
+  }
+
+  async function handleGameStart() {
+    // create tasks and push to start
+    const res = await addGeneralTasks(gameId);
+    console.log(res);
+    for (let key in players.value) {
+      await addIndividualTask(gameId, key);
+    }
+    // tasks added, set game state to starting then push to start
+    updateGameState(gameId, "starting");
+    router.push("/start");
   }
 
 </script>

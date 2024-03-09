@@ -24,6 +24,7 @@
     text-offwhite
     font-gohu
     text-xl
+    max-w-48
     "
     :class="[shadow ? 'drop-shadow-solid' : '']"
     >

@@ -33,7 +33,7 @@ export default function() {
                 indivTasks: deleteField()
             });
         } else {
-            console.log("you done fucked up boy");
+            console.log("game does not exist!");
         }
     };
 
@@ -233,6 +233,6 @@ export default function() {
         updateTaskStatus,
         addIndividualTask,
         retrievePlayers,
-        addGeneralTasks,
+        addGeneralTasks
     }
 }
