@@ -93,39 +93,39 @@ import { AIMessage } from '../useTypes';
         return
     }
 
-    async function subscribeGameState(
-        user: User,
-        gameId: string,
-        gameStore,
-        callback: () => void,
-    ):Promise<Unsubscribe> {
-        const { hostId } = storeToRefs(gameStore)
-        const q = query(collection(db, "games"), where("gameId", "==", gameId));
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => { 
-                snapshot.docChanges().forEach((change) => {
-                    gameStore.updateState(change.doc.data());
-                    if (user["uid"] == hostId.value) {
-                        const players = change.doc.data()["players"]
-                        for (let key in players) {
-                            if (key != hostId.value) {
-                                subscribePlayerState(key, gameId)
-                            }
-                        }
-                    } else {
-                        const players = change.doc.data()["players"]
-                        if (!(user["uid"] in players)) {
-                            // kicked
-                            callback();
-                            unsubscribe();
-                        }
-                    } 
-                })
+  async function subscribeGameState(
+    user: User,
+    gameId: string,
+    gameStore,
+    callback: () => void,
+  ):Promise<Unsubscribe> {
+    const { hostId } = storeToRefs(gameStore)
+    const q = query(collection(db, "games"), where("gameId", "==", gameId));
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          gameStore.updateState(change.doc.data());
+          if (user["uid"] == hostId.value) {
+            const players = change.doc.data()["players"]
+            for (let key in players) {
+              if (key != hostId.value) {
+                subscribePlayerState(key, gameId)
+              }
             }
-        );
-        return unsubscribe;
-    }
+          } else {
+            const players = change.doc.data()["players"]
+            if (!(user["uid"] in players)) {
+              // kicked
+              callback();
+              unsubscribe();
+            }
+          }
+        })
+      }
+    );
+    return unsubscribe;
+  }
 
     return {
         updateGameState,
