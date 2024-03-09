@@ -47,7 +47,31 @@ export default function() {
     }
   }
 
+  async function sendAIMessage(chatId: string, message: string, image:string, roundNum:number) {
+    if (!message) {
+      return;
+    }
+
+    try {
+      console.log("here")
+      const messagesRef = collection(db, 'messages/AIChats/' + chatId);
+      const user = await getCurrentUser();
+      const messagesDoc = await addDoc(messagesRef, {
+        text: message,
+        createdAt: new Date().toISOString(),
+        sentBy: "SushAIntv1.0",
+        userName: "SushAIntv1.0",
+        image: image,
+        roundNum: roundNum,
+      });
+      // console.log('Document written with ID: ', messagesDoc.id);
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
+  }
+
   return {
+    sendAIMessage,
     subscribeMessages,
     sendMessage
   };

@@ -84,7 +84,7 @@
   import { type Unsubscribe } from 'firebase/firestore';
   import { useGameStore } from '~/stores/game'; 
   import { onMounted, watch } from 'vue';
-import useTasks from '~/composables/playerTasks/useTasks';
+  import useTasks from '~/composables/playerTasks/useTasks';
   const user = ref<User | null>(null);
   const userName = ref<string | null>(null);
   const userId = ref<string | null>(null);

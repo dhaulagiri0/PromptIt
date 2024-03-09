@@ -23,7 +23,7 @@
     overflow-hidden
     drop-shadow-solid
   ">
-    <div class="block h-fll">
+    <div class="block h-full">
       <div class="
         flex
         header 
