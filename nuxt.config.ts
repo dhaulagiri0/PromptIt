@@ -32,10 +32,11 @@ export default defineNuxtConfig({
     ]
   },
   runtimeConfig: {
-    webhook_url: process.env.WEBHOOK_URL,
     public: {
       stability_api_key: process.env.STABILITY_APIKEY,
       perplexity_api_key: process.env.PERPLEXITY_APIKEY,
+      webhook_url: process.env.WEBHOOK_URL,
+      aiName: process.env.AI_NAME,
       firebase: {
         apiKey: process.env.FIREBASE_APIKEY,
         authDomain: process.env.FIREBASE_AUTHDOMAIN,

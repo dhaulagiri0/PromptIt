@@ -13,10 +13,76 @@ import {
 } from 'firebase/firestore'
 import { type User } from 'firebase/auth';
 import { storeToRefs } from 'pinia';
+import { AIMessage } from '../useTypes';
 
 export default function() {
   const { $firestore: db } = useNuxtApp();
   const { subscribePlayerState } = useUserState();
+
+  const obfuscater = (str, rep) => {
+    if (!str) return;                      // Do nothing if no string passed
+    const arr = [...str];                  // Convert String to Array
+    const len = arr.length;
+    // obfuscate 80%
+    var i: number = (len * 0.9) | 0;
+    i = Math.min(Math.abs(i), len);        // Fix to Positive and not > len 
+    while (i) {
+      const r = ~~(Math.random() * len);
+      if (Array.isArray(arr[r])) continue; // Skip if is array (not a character)
+      arr[r] = [rep];                      // Insert an Array with the rep char
+      --i;
+    }
+    return arr.flat().join("");
+  };
+
+  async function listenLiveMessage(
+    gameId: string,
+    callback: (message: AIMessage, messages: AIMessage[], unObfuscated: AIMessage[]) => void,
+  ): Promise<Unsubscribe> {
+    const messagesRef = collection(db, 'messages/AIChats/' + gameId);
+    const q = query(messagesRef, orderBy('createdAt'));
+
+    return onSnapshot(q, (snapshot) => {
+      const messages = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      })).reverse();
+      // messages.map((message) => {
+      //     message.text = message.text.split(" ").map((str) => obfuscater(str, "*")).join(" ");
+      // })
+      messages.map((message) => {
+        message.text = message.text;
+      })
+      callback(messages[0], messages);
+    });
+  }
+
+  async function sendLiveMessage(
+    gameId: string,
+    user: User,
+    message: string,
+    roundNum: number,
+    image: string = "",
+  ) {
+    if (!message) {
+      return;
+    }
+
+    try {
+      const messagesRef = doc(db, 'messages/AIChats/' + gameId, user.uid + "-" + roundNum);
+      const messagesDoc = await setDoc(messagesRef, {
+        text: message,
+        createdAt: new Date().toISOString(),
+        sentBy: user.uid,
+        userName: user.displayName,
+        image: image,
+        roundNum: roundNum,
+      }, { merge: true });
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
+  }
+
 
   async function updateGameState(
     gameId: string,
@@ -60,9 +126,11 @@ export default function() {
     );
     return unsubscribe;
   }
-
   return {
+    obfuscater,
     updateGameState,
     subscribeGameState,
+    sendLiveMessage,
+    listenLiveMessage,
   };
 }

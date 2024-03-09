@@ -13,6 +13,8 @@ export const useGameStore = defineStore('game_states', () => {
     const generalTasks = ref({});
     const indivTasks = ref({});
     const players = ref({});
+    const currentPlayerId = ref("");
+    const roundNum = ref(0);
 
     function setGameId(_gameId: string) {
       gameId.value = _gameId;
@@ -25,7 +27,6 @@ export const useGameStore = defineStore('game_states', () => {
     // should only be used with subscribeGameState from useGameListeners
     function updateState(gameData: DocumentData) {
         // console.log(gameData);
-        // console.log("we updating");
         gameId.value = gameData["gameId"];
         hostId.value = gameData["hostId"];
         antagonistId.value = gameData["antagonistId"];
@@ -34,7 +35,8 @@ export const useGameStore = defineStore('game_states', () => {
         players.value = gameData["players"];
         generalTasks.value = gameData["generalTasks"];
         indivTasks.value = gameData["indivTasks"];
-
+        currentPlayerId.value = gameData["currentPlayerId"] ? gameData["currentPlayerId"]: currentPlayerId.value;
+        roundNum.value = gameData["roundNum"] ? gameData["roundNum"]: roundNum.value;
         // console.log(hostId.value)
         // console.log(players.value)
     }
@@ -49,10 +51,14 @@ export const useGameStore = defineStore('game_states', () => {
       generalTasks.value = {};
       indivTasks.value = {};
       players.value = [];
+      currentPlayerId.value = "";
+      roundNum.value = 0;
     }
 
   
     return { 
+      roundNum,
+      currentPlayerId,
       hostId, 
       gameId, 
       antagonistId, 

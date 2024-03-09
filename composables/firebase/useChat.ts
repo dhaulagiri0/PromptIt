@@ -11,6 +11,8 @@ import {
 export default function() {
   const { $firestore: db } = useNuxtApp();
   const { getCurrentUser } = useAuth();
+  const config = useRuntimeConfig();
+  const aiName = config.public.aiName
 
   async function subscribeMessages(chatId: String,
     callback: (messages: Message[]) => void
@@ -47,7 +49,31 @@ export default function() {
     }
   }
 
+  async function sendAIMessage(chatId: string, message: string, image:string, roundNum:number) {
+    if (!message) {
+      return;
+    }
+
+    try {
+      console.log("here")
+      const messagesRef = collection(db, 'messages/AIChats/' + chatId);
+      const user = await getCurrentUser();
+      const messagesDoc = await addDoc(messagesRef, {
+        text: message,
+        createdAt: new Date().toISOString(),
+        sentBy: aiName,
+        userName: aiName,
+        image: image,
+        roundNum: roundNum,
+      });
+      // console.log('Document written with ID: ', messagesDoc.id);
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
+  }
+
   return {
+    sendAIMessage,
     subscribeMessages,
     sendMessage
   };

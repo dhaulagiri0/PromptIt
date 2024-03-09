@@ -39,36 +39,36 @@ export default function() {
   }
 
   // generate initial prompt with perplexity
-  async function generateInitialPrompt(
-    gameId: string, roundNum: number
-  ): Promise<string> {
-    const options = {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        authorization: `Bearer ${perplexityApiKey}`
-      },
-      body: JSON.stringify({
-        model: 'mistral-7b-instruct',
-        messages: [{ content: "Be concise, the prompt you generate is to be fed to an image generation AI. This will then be used in a game to get players to guess what your description and earn points. Therefore, do not make the scene overly complicated and stick to a few objects and points of interest. Keep it to 2 sentences, and write in plain layman english.", role: 'system' },
-        { content: "Generate a description for an intriguing image, with a few points of interest and do not over complicate the scene, as it should be fairly easy for a human to guess the image's description. For example: these ideas can range from common games, landscapes, people, cities, objects, cars, fantasies, comics, etc. Try to evoke a specific emotion (e.g., A sense of wonder and discovery, a feeling of peace and serenity, a touch of mystery and intrigue). Start your message with something along the lines of 'Generate an image based on'.", role: 'user' }],
-        max_tokens: 0,
-        temperature: 1.2,
-        top_p: 0.9,
-        top_k: 0,
-        stream: false,
-        presence_penalty: 0,
-        frequency_penalty: 1
-      })
-    };
-
-    const { data } = await useFetch('https://api.perplexity.ai/chat/completions', options);
-    const prompt = data.value.choices[0].message.content;
-    addPromptToFirebase(gameId, roundNum, prompt);
-    console.log(prompt);
-    return prompt;
-  }
+  // async function generateInitialPrompt(
+  //   gameId: string, roundNum: number
+  // ): Promise<string> {
+  //   const options = {
+  //     method: 'POST',
+  //     headers: {
+  //       accept: 'application/json',
+  //       'content-type': 'application/json',
+  //       authorization: `Bearer ${perplexityApiKey}`
+  //     },
+  //     body: JSON.stringify({
+  //       model: 'mistral-7b-instruct',
+  //       messages: [{ content: "Be concise, the prompt you generate is to be fed to an image generation AI. This will then be used in a game to get players to guess what your description and earn points. Therefore, do not make the scene overly complicated and stick to a few objects and points of interest. Keep it to 2 sentences, and write in plain layman english.", role: 'system' },
+  //       { content: "Generate a description for an intriguing image, with a few points of interest and do not over complicate the scene, as it should be fairly easy for a human to guess the image's description. For example: these ideas can range from common games, landscapes, people, cities, objects, cars, fantasies, comics, etc. Try to evoke a specific emotion (e.g., A sense of wonder and discovery, a feeling of peace and serenity, a touch of mystery and intrigue). Start your message with something along the lines of 'Generate an image based on'.", role: 'user' }],
+  //       max_tokens: 0,
+  //       temperature: 1.2,
+  //       top_p: 0.9,
+  //       top_k: 0,
+  //       stream: false,
+  //       presence_penalty: 0,
+  //       frequency_penalty: 1
+  //     })
+  //   };
+  //
+  //   const { data } = await useFetch('https://api.perplexity.ai/chat/completions', options);
+  //   const prompt = data.value.choices[0].message.content;
+  //   addPromptToFirebase(gameId, roundNum, prompt);
+  //   console.log(prompt);
+  //   return prompt;
+  // }
 
   async function generateInitialImage(
     gameId: String, imagePrompt: string, roundNum: number
@@ -144,28 +144,24 @@ export default function() {
     }
   };
 
-  // rates the creativity of the given prompt using perplexity
-  // output is the number of points a user gets
-  //  needs to be bounded between 0 and say 500 pts
-  async function rateCreativity(prompt: string): Promise<Number> {
+  async function getNextImage(prompt: string): Promise<URL> {
     await delay(1000)
-    return new Promise(resolve => Math.random() * (500 - 0) + 0);
+    console.log("image delay")
+    const imageURL = new URL("https://en.anmosugoi.com/wp-content/uploads/2024/02/Sousou-no-Frieren-Frieren-portada.webp")
+    return imageURL
   }
 
-  // given the original prompt and a user generated prompt
-  // rate how closely they resemble each other
-  // output is the number of points a user would get
-  async function rateCloseNess(promptOriginal: string, curPrompt: string): Promise<Number> {
+
+  // generate initial prompt with perplexity
+  async function generateInitialPrompt(): Promise<string> {
     await delay(1000)
-    return new Promise(resolve => Math.random() * (500 - 0) + 0);
+    console.log("prompt delay")
+    return "Generate an image based on a worn-out detective's office, with a dusty bookshelf filled with mysteriously label-less books and a ticking clock on the desk, alongside a magnifying glass and a smoky pipe lying nearby."
   }
 
   return {
     getNextImage,
     generateInitialPrompt,
-    rateCreativity,
-    rateCloseNess,
     generateInitialImage,
   };
-
 }

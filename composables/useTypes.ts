@@ -5,6 +5,15 @@ export type Message = {
   userName: string | undefined;
 }
 
+export type AIMessage = {
+  text: string;
+  sentBy: string | undefined;
+  createdAt: string | undefined;
+  userName: string | undefined;
+  image:string;
+  roundNum:number;
+}
+
 export type Game = {
   gameId: string;
   host: string;
