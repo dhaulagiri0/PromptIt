@@ -50,11 +50,10 @@ l<template>
                                                     p-3
                                                     pl-5
                                                     pr-5
-                                                    text-offwhite
                                                     font-gohu
                                                     text-s
                                                     "
-                                                    :class="`${user != null && message.sentBy != user.uid ? 'bg-black' : 'justify-self-end bg-richblue'}`"                                                >
+                                                    :class="`${user != null && message.sentBy != user.uid ? 'bg-grapefruit text-black' : 'justify-self-end bg-richblue text-offwhite'}`"                                                >
                                                     {{ message.text }}
                                                 </div>
                                             </div>
@@ -116,7 +115,6 @@ l<template>
                 h-fill
                 "
                 >
-                <h3 class="text-ellipsis text-nowrap">{{ text }}</h3>
             </div>
             <div class="flex-1 basis-1/4 h-fill grid space-y-4">
                 <div class="
@@ -128,14 +126,25 @@ l<template>
                     pr-5
                     bg-offwhite
                     border-4
-                    text-offwhite
+                    text-black
                     font-gohu
                     text-xl
                     grow
                     drop-shadow-solid
                     "
                     >
-                    <h3 class="text-ellipsis text-nowrap">{{ text }}</h3>
+                    <p class="mb-4 text-xl">General Challenges:</p>
+                    <div v-for="(task, index) in generalTasks" :key="task">
+                        <div class="
+                            container
+                            flex
+                            flex-col
+                            items-left
+                            ">
+                        <p class="text-m block">{{ index + ". " + task.name }}</p>
+                        <p class="text-s mb-4 block">{{ task.description }}</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="
                     border-black
@@ -146,15 +155,25 @@ l<template>
                     pr-5
                     bg-offwhite
                     border-4
-                    text-offwhite
+                    text-black
                     font-gohu
                     text-xl
                     grow
                     drop-shadow-solid
                     "
-                    :class="[shadow ? 'drop-shadow-solid' : '']"
                     >
-                    <h3 class="text-ellipsis text-nowrap">{{ text }}</h3>
+                    <p class="mb-4 text-xl">Individual Challenges:</p>
+                    <div v-for="(task, index) in indivTasks[user.uid]" :key="task">
+                        <div class="
+                            container
+                            flex
+                            flex-col
+                            items-left
+                            ">
+                        <p class="text-m block">{{ index + ". " + task.name }}</p>
+                        <p class="text-s mb-4 block">{{ task.description }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -179,7 +198,7 @@ type Message = {
   userName: string | undefined;
 };
 
-const { hostId, players, gameStatus, gameId } = storeToRefs(gameStore);
+const { hostId, players, generalTasks, indivTasks, gameStatus, gameId } = storeToRefs(gameStore);
 
 const allMessages = ref<Message[]>([]);
 
