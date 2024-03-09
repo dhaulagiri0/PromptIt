@@ -57,23 +57,6 @@ l<template>
                                                     :class="`${user != null && message.sentBy != user.uid ? 'bg-black' : 'justify-self-end bg-richblue'}`"                                                >
                                                     {{ message.text }}
                                                 </div>
-                                                <!-- <div class="
-                                                    w-fit
-                                                    rounded-vl
-                                                    overflow-hidden
-                                                    p-3
-                                                    pl-5
-                                                    pr-5
-                                                    text-offwhite
-                                                    font-gohu
-                                                    text-s
-                                                    bg-richblue
-                                                    justify-self-end
-                                                    "
-                                                    v-else
-                                                    >
-                                                    {{ message.text }}
-                                                </div> -->
                                             </div>
                                         </div>
                                     </div>
@@ -84,6 +67,7 @@ l<template>
                 </WindowCard>
                 <form class="w-fill flex-1/5 flex space-x-2" @submit.prevent="handleSendMessage">
                     <input class="
+                        drop-shadow-solid
                         flex-1        
                         basis-2/3            
                         border-black
@@ -99,6 +83,7 @@ l<template>
                         v-model="newMessage"/>
 
                     <button class="
+                        drop-shadow-solid
                         flex-1
                         basis-1/3
                         border-black
