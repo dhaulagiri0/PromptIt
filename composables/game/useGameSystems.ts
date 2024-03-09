@@ -32,11 +32,6 @@ export default function() {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  async function getNextImage(prompt: string): Promise<URL> {
-    await delay(1000)
-    const imageURL = new URL("https://en.anmosugoi.com/wp-content/uploads/2024/02/Sousou-no-Frieren-Frieren-portada.webp")
-    return new Promise(resolve => imageURL)
-  }
 
   // generate initial prompt with perplexity
   // async function generateInitialPrompt(

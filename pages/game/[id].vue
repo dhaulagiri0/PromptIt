@@ -379,7 +379,7 @@ onBeforeMount(async () => {
       await delay(30000);
       enableMainChat.value = false;
       if (!hasGone.value) {
-        await sendLiveMessage(gameId.value, user.value, "I give up!", roundNum.value);
+        await sendLiveMessage(gameId.value, user.value, newPrompt.value, roundNum.value);
         hasGone.value = true;
         await delay(5000);
       }
@@ -493,7 +493,7 @@ async function handleGameHost() {
     await delay(5000);
     prevPrompt = lastMessage.value;
     prevImage = await getNextImage(prevPrompt);
-    await sendAIMessage(gameId.value, nextFirstPlayerId + " generated the following image: ", prevImage.toString(), round);
+    await sendAIMessage(gameId.value, getUserNameFromId(nextFirstPlayerId) + " wrote a description that generated the following following image: ", prevImage.toString(), round);
 
 
     const shuffledKeys = Array.from(Object.keys(players.value)).sort(() => 0.5 - Math.random());
@@ -508,7 +508,7 @@ async function handleGameHost() {
         await delay(5000);
         prevPrompt = lastMessage.value;
         prevImage = await getNextImage(prevPrompt);
-        await sendAIMessage(gameId.value, key + " generated the following image: ", prevImage.toString(), round);
+        await sendAIMessage(gameId.value, getUserNameFromId(key) + " wrote a description that generated the following image: ", prevImage.toString(), round);
       }
     }
 
@@ -521,7 +521,7 @@ async function handleGameHost() {
     await delay(5000);
     prevPrompt = lastMessage.value;
     prevImage = await getNextImage(prevPrompt);
-    await sendAIMessage(gameId.value, nextLastPlayerId + " generated the following image: ", prevImage.toString(), round);
+    await sendAIMessage(gameId.value, getUserNameFromId(nextLastPlayerId) + " wrote a description that generated the following image: ", prevImage.toString(), round);
 
     // deciding on the next pair of first and last players
     const _players = generateNextPlayers(firstPlayers, lastPlayer, players.value);
