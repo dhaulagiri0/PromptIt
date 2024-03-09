@@ -12,34 +12,7 @@
     <main class="grow flex flex-row justify-center">
       <div class="flex items-center gap-16">
         <div class="w-80">
-          <div class="
-            container
-            p-4
-            flex
-            items-center
-            space-x-4
-            "
-          >
-            <div class="flex-none">
-              <UserIcon pfp="pfp"/>
-            </div>
-            <div 
-              class="
-              w-full
-              rounded-vl
-              bg-black
-              border-4
-              border-white
-              text-xl
-              text-white
-              p-4 
-              text-nowrap 
-              text-ellipsis">
-              <p>
-              {{ username }}
-              </p>
-            </div>
-          </div>
+          <UserNormal :text="username"/>
           <div class="
             border-white
             rounded-vl
@@ -56,11 +29,9 @@
             "
             >
             <div class="flex flex-col justify-between place-items-center">
-              <h3>You are</h3>
-              <h3>Cringe_</h3>
+              <h3>You are cringe</h3>
             </div>
           </div>
-          <h3 class="text-white text-center">Hello</h3>
         </div>
           <div class="
             border-white
@@ -82,7 +53,7 @@
               <br>
               <!--TODO: Change colour to actual yellow-->
               <h3 class="text-grapefruit">Individual Tasks:</h3>
-              <div v-for="task in indivTasks['WynHlrBXhUckXXHi3NrijZ88sV83']" 
+              <div v-if="user != null" v-for="task in indivTasks[user.uid]" 
                 :key="indivTasks">
                 <p>{{ task["description"] }}</p>
               </div>
@@ -98,28 +69,41 @@
 <script setup lang="ts">
 import { useGameStore } from "~/stores/game";
 import { storeToRefs } from "pinia";
+import { onMounted } from "vue";
 const gameStore =  useGameStore();
-const { indivTasks } = storeToRefs(gameStore);
-let unsub: Unsubscribe | null = null;
-const { subscribeGameState } = useGameListeners(); 
+const { indivTasks, gameId } = storeToRefs(gameStore);
+const { checkGame } = useTasks();
 const { getCurrentUser } = useAuth(); 
 const router = useRouter();
 
-const gameId = "74hjv3";
+// const gameId = "74hjv3";
 const goBack = () => router.push('/');
-let user = reactive<User | null>(null);
+let user = ref<User | null>(null);
 const username = ref<string>("Username");
 onBeforeMount(async () => {
     const _user = await getCurrentUser();
     if (_user) {
+        user.value = _user
         username.value = _user.displayName;
     }
-    unsub = await subscribeGameState(_user, gameId, gameStore, goBack);
 
-    watch(indivTasks, () => {
-        console.log(indivTasks.value);
-    })  
+    const gameSnap = await checkGame(gameId.value)
+    console.log(gameId.value)
+    console.log(gameSnap)
+    if (!gameSnap) {
+      goBack();
+    }
 });
 
+function delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}
+
+onMounted(async () => {
+  // wait 10 seconds 
+  await delay(5000);
+  // push to game page
+  router.push("/game/" + gameId.value)
+})
 
 </script>

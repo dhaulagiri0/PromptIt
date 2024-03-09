@@ -57,7 +57,7 @@ onBeforeMount(async () => {
     // console.log("found user")
     user.value = _user;
     onDisconnectListener(user.value);
-    updateUserState(user.value.uid, "online");
+    updateUserState(user.value.uid, "ingame");
   }
 })
 
