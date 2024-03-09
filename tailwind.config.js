@@ -12,7 +12,7 @@ export default {
   ],
   theme: {
     borderRadius: {
-      'vl' : '0.7rem',
+      'vl': '0.7rem',
     },
     extend: {
       fontFamily: {
@@ -35,7 +35,7 @@ export default {
     },
   },
   safelist: [
-    {pattern: /(bg|text|border)-./},
+    { pattern: /(bg|text|border)-./ },
   ],
   plugins: [],
 }

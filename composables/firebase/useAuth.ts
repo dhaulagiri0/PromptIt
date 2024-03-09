@@ -74,8 +74,8 @@ export default function() {
       const googleProvider = await new GoogleAuthProvider();
       const user = await signInWithPopup(auth, googleProvider);
       const newAccount = await setDoc(doc(db, `accounts/${user.user.uid}`), {
-        username:  user.user.displayName,
-        email:  user.user.email
+        username: user.user.displayName,
+        email: user.user.email
       });
     } catch (e: any) {
       throw createError({
