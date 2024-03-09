@@ -2,6 +2,7 @@
   <div 
     class="font-gohu">
     <h1>Chat</h1>
+    <ProgressBar colour="richblue" roundNumber="2"/>
     <div v-for="message in allMessages" :key="message">
       <p>{{ message }}</p>
     </div>

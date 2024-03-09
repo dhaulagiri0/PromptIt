@@ -1,6 +1,8 @@
 <template>
   <div class="bg-richblue h-screen font-gohu overflow-x-hidden flex flex-col">
-    <Header back-visible="true" />
+    <Header :back-visible="true" :progress="true" >
+      <ProgressBar duration="10" color="richpink"/>
+    </Header>
     <main class="grow flex flex-row justify-center space-x-4 px-4 pb-4">
       <div class="flex flex-col basis-1/4 h-fill space-y-4">
         <WindowCard class="flex-1 flex-col" headerText="Team Chat">

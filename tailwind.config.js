@@ -11,10 +11,10 @@ export default {
     './error.vue'
   ],
   theme: {
-    borderRadius: {
-      'vl': '0.7rem',
-    },
     extend: {
+      borderRadius: {
+        'vl': '0.7rem',
+      },
       fontFamily: {
         gohu: ['Gohu'],
       },
