@@ -3,9 +3,6 @@
         <Header back-visible="true" />
         <main class="grow flex flex-row justify-center space-x-4 px-4 pb-4 h-5/6">
             <div class="flex flex-col basis-1/4 h-fill space-y-4">
-                {{ roundNum }}
-                {{ currentPlayerId }}
-                {{ onTurn }}
                 <WindowCard class="flex-1 flex-col" headerText="Team Chat">
                     <div id="con" class="h-full">
                         <div class="h-full">
