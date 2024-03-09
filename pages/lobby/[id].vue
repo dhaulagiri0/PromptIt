@@ -37,6 +37,7 @@
             border-4
             text-offwhite
             font-gohu
+            cursor-pointer
             text-3xl
             drop-shadow-solid
             "
