@@ -11,6 +11,8 @@ import {
 export default function() {
   const { $firestore: db } = useNuxtApp();
   const { getCurrentUser } = useAuth();
+  const config = useRuntimeConfig();
+  const aiName = config.public.aiName
 
   async function subscribeMessages(chatId: String, 
     callback: (messages: Message[]) => void
@@ -59,8 +61,8 @@ export default function() {
       const messagesDoc = await addDoc(messagesRef, {
         text: message,
         createdAt: new Date().toISOString(),
-        sentBy: "SushAIntv1.0",
-        userName: "SushAIntv1.0",
+        sentBy: aiName,
+        userName: aiName,
         image: image,
         roundNum: roundNum,
       });

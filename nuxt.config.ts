@@ -43,6 +43,7 @@ export default defineNuxtConfig({
         databaseURL:"https://promptit-cbdaa-default-rtdb.europe-west1.firebasedatabase.app",
       },
       webhook_url: process.env.WEBHOOK_URL,
+      aiName: process.env.AI_NAME,
     }
   },
   hooks: {

@@ -1,10 +1,8 @@
-l<template>
-    <div class="bg-richblue h-screen font-gohu overflow-x-hidden flex flex-col">
+<template>
+    <div class="bg-darkergrey h-screen font-gohu overflow-x-hidden flex flex-col">
         <Header back-visible="true" />
         <main class="grow flex flex-row justify-center space-x-4 px-4 pb-4 h-5/6">
             <div class="flex flex-col basis-1/4 h-fill space-y-4">
-                {{ currentPlayerId }}
-                {{ roundNum }}
                 <WindowCard class="flex-1 flex-col" headerText="Team Chat">
                     <div id="con" class="h-full">
                         <div class="h-full">
@@ -23,7 +21,7 @@ l<template>
                                             flex
                                             items-center
                                             "
-                                        >
+                                            >
                                             <div class="flex-1 space-y-2 mb-4 w-fill grid">
                                                 <div class="
                                                     border-grapefruit
@@ -36,7 +34,7 @@ l<template>
                                                     border-4
                                                     text-offwhite
                                                     font-gohu
-                                                    text-s
+                                                    text-l
                                                     max-w-48
                                                     text-nowrap
                                                     text-ellipsis
@@ -53,7 +51,7 @@ l<template>
                                                     pl-5
                                                     pr-5
                                                     font-gohu
-                                                    text-s
+                                                    text-xl
                                                     "
                                                     :class="`${user != null && message.sentBy != user.uid ? 'bg-grapefruit text-black' : 'justify-self-end bg-richblue text-offwhite'}`"                                                >
                                                     {{ message.text }}
@@ -68,7 +66,7 @@ l<template>
                         </div>
                     </div>
                 </WindowCard>
-                <form class="w-fill flex-1/5 flex space-x-2" @submit.prevent="handleSendMessage">
+                <form class="w-fill flex-1/5 flex space-x-4" @submit.prevent="handleSendMessage">
                     <input class="
                         drop-shadow-solid
                         flex-1        
@@ -81,6 +79,7 @@ l<template>
                         pr-5
                         bg-offwhite
                         w-fill
+                        text-xl
                         placeholder:text-richgrey
                         border-4" placeholder="message"
                         v-model="newMessage"/>
@@ -97,9 +96,10 @@ l<template>
                         pr-5
                         w-fill
                         border-4 
+                        text-xl
                         bg-grapefruit"
                         type="submit">  
-                        Send    
+                        SEND    
                     </button>    
                 </form>    
             </div>
@@ -113,7 +113,7 @@ l<template>
                     pl-5
                     pr-5
                     bg-black
-                    border-4
+                    border-8
                     text-offwhite
                     font-gohu
                     text-xl
@@ -136,59 +136,37 @@ l<template>
                                 w-fill
                                 "
                                 >
-                                <!-- <div v-if="message.roundNum == roundNum" class="flex-1 space-y-2 mb-4 w-fill grid">
-                                    <div class="
-                                        border-grapefruit
-                                        rounded-vl
-                                        overflow-hidden
-                                        p-3
-                                        pl-5
-                                        pr-5
-                                        bg-black
-                                        border-4
-                                        text-offwhite
-                                        font-gohu
-                                        text-s
-                                        max-w-48
-                                        text-nowrap
-                                        text-ellipsis
-                                        "
-                                        v-if="(index == 0 || aiMessages[index - 1].roundNum != roundNum) || (index == 0 && user != null && message.sentBy != user.uid) || (user != null && message.sentBy != user.uid && allMessages[index - 1] != undefined && allMessages[index - 1].sentBy != message.sentBy)"
-                                        >
-                                        {{ message.userName }}
-                                    </div> -->
                                     <div v-if="message.roundNum == roundNum" class="flex-1 space-y-2 mb-4 w-fill grid">
                                     <div class="
-                                        border-grapefruit
                                         rounded-vl
                                         overflow-hidden
-                                        p-3
                                         pl-5
                                         pr-5
                                         bg-black
-                                        border-4
-                                        text-offwhite
                                         font-gohu
-                                        text-s
                                         max-w-48
                                         text-nowrap
                                         text-ellipsis
                                         "
+                                        :class="[
+                                            `${ message.sentBy == aiName ? 'text-2xl border-black text-richblue p-0' : 'text-s text-offwhite border-richpink border-4 p-3' }`,
+                                        ]"
                                         v-if="(user != null && message.sentBy != user.uid)">
                                         {{ message.userName }}
                                     </div>
                                     <div class="
-                                        w-fill
+                                        w-fit
                                         rounded-vl
                                         overflow-hidden
-                                        p-3
                                         pl-5
                                         pr-5
                                         font-gohu
-                                        text-s
                                         text-wrap
                                         "
-                                        :class="`${user != null && message.sentBy != user.uid ? 'bg-grapefruit text-black' : 'justify-self-end bg-richblue text-offwhite'}`"                                                >
+                                        :class="[
+                                            `${user != null && message.sentBy != user.uid ? 'text-black' : 'justify-self-end bg-richblue text-offwhite'}`,
+                                            `${user != null && message.sentBy == aiName ? 'text-m bg-black text-offwhite p-1 pb-8' : 'bg-richpink text-s p-3' }`,
+                                        ]">
                                         <p class="w-fill text-wrap">{{ message.text }}</p>  
                                     </div>
                                     <div class="
@@ -197,7 +175,7 @@ l<template>
                                         overflow-hidden
                                         "
                                         v-if="message.image && (hasGone || (onTurn && index == allMessages.length - 1))"
-                                        :class="`${user != null && message.sentBy != user.uid ? 'bg-grapefruit text-black' : 'justify-self-end bg-richblue text-offwhite'}`"                                                >
+                                        :class="`${user != null && message.sentBy != user.uid ? 'bg-offwhite' : 'justify-self-end bg-richblue text-offwhite'}`"                                                >
                                         <img :src="message.image"/>
                                     </div>
                                 </div>
@@ -205,7 +183,7 @@ l<template>
                         </div>
                     </div>  
                 </div>
-                <form v-if="onTurn" class="w-fill flex space-x-4" @submit.prevent="handlePromptMessage">
+                <form v-if="onTurn" class="w-fill flex space-x-4" @submit.prevent="submitPrompt">
                     <textarea    
                         class="
                         no-scrollbar
@@ -334,6 +312,8 @@ import { onMounted, watch } from 'vue';
 import type { Unsubscribe } from 'firebase/auth';
 import useGameSystems from '~/composables/game/useGameSystems';
 import useChat from '~/composables/firebase/useChat';
+const config = useRuntimeConfig();
+const aiName = config.public.aiName
 
 export type AIMessage = {
   text: string;
@@ -361,8 +341,8 @@ onBeforeMount(async () => {
 
     subscribeMessages(gameId.value, 
         (messages: AIMessage[]) => {
-            console.log(messages);
-            console.log(messages.map((message: AIMessage) => message.text));
+            // console.log(messages);
+            // console.log(messages.map((message: AIMessage) => message.text));
             allMessages.value = []
             messages.map(
                 (message: AIMessage) => { 
@@ -393,85 +373,6 @@ function delay(ms: number) {
 var hasGone = ref(false);
 var onTurn = ref(false);
 
-async function handlePromptMessage() {
-    console.log("handling prompts")
-    promptWatcher = watch(newPrompt, async () => {
-        console.log(newPrompt.value)
-        await sendLiveMessage(gameId.value, user.value, newPrompt.value, roundNum.value)
-    })
-}
-
-
-async function handleGameHost() {
-    var nextFirstPlayerId = "";
-    var nextLastPlayerId = "";
-    var round = 0;
-    var firstPlayers = []
-    var lastPlayer = []
-
-    // deciding on the first pair of first and last players
-    const _players = generateNextPlayers([], [], players.value);
-    nextFirstPlayerId = _players[0];
-    nextLastPlayerId = _players[1];
-    firstPlayers.push(nextFirstPlayerId)
-    lastPlayer.push(nextLastPlayerId)
-    
-    while ((nextFirstPlayerId != "" && nextLastPlayerId != "") || round == 0) {
-        round += 1;
-        console.log("NEW ROUND")
-        
-        var prevPrompt = await generateInitialPrompt();
-        var prevImage = await getNextImage(prevPrompt);
-        
-        await sendAIMessage(gameId.value, "Original prompt: " + prevPrompt, prevImage.toString(), round)
-        await setGameProgress(gameId.value, nextFirstPlayerId, round);
-        await delay(60000);
-        console.log(nextFirstPlayerId + " finished from round: " + round)
-
-        // slight delay to make sure the message is updated
-        await delay(5000);
-        prevPrompt = lastMessage.value;
-        prevImage = await getNextImage(prevPrompt);
-        await sendAIMessage(gameId.value, nextFirstPlayerId + " generated the following image: ", prevImage.toString(), round)
-
-
-        const shuffledKeys = Array.from(Object.keys(players.value)).sort(() => 0.5 - Math.random());
-        for (var key of shuffledKeys) {
-            if (key != nextLastPlayerId && key != nextFirstPlayerId) {
-                await setGameProgress(gameId.value, key, round);
-                await delay(60000);
-                console.log("another player finish from round: " + round)
-
-                // slight delay to make sure the message is updated
-                await delay(5000);
-                prevPrompt = lastMessage.value;
-                prevImage = await getNextImage(prevPrompt);
-                await sendAIMessage(gameId.value, nextFirstPlayerId + " generated the following image: ", prevImage.toString(), round)
-            }
-        }
-
-        await setGameProgress(gameId.value, nextLastPlayerId, round);
-        await delay(60000);
-        console.log("last player finish from round: " + round)
-
-        // slight delay to make sure the message is updated
-        await delay(5000);
-        prevPrompt = lastMessage.value;
-        prevImage = await getNextImage(prevPrompt);
-        await sendAIMessage(gameId.value, nextFirstPlayerId + " generated the following image: ", prevImage.toString(), round)
-
-        // deciding on the next pair of first and last players
-        const _players = generateNextPlayers(firstPlayers, lastPlayer, players.value);
-        nextFirstPlayerId = _players[0];
-        nextLastPlayerId = _players[1];
-        firstPlayers.push(nextFirstPlayerId)
-        lastPlayer.push(nextLastPlayerId)
-    }
-
-    await updateGameState(gameId.value, "ended");
-}
-
-
 var prevUnsub = await listenLiveMessage(
         gameId.value, 
         true,
@@ -490,25 +391,109 @@ var prevUnsub = await listenLiveMessage(
                     });
                 });
         })
+
+async function submitPrompt() {
+    if (promptWatcher != null) {
+        promptWatcher();
+        promptWatcher = null;
+    }
+    sendLiveMessage(gameId.value, user.value, newPrompt.value, roundNum.value);
+    newPrompt.value = "";
+    onTurn = false;
+}
+
+async function handlePromptMessage() {
+    promptWatcher = watch(newPrompt, async () => {
+        await sendLiveMessage(gameId.value, user.value, newPrompt.value, roundNum.value);
+    })
+}
+
+
+async function handleGameHost() {
+    var nextFirstPlayerId = "";
+    var nextLastPlayerId = "";
+    var round = 0;
+    var firstPlayers = [];
+    var lastPlayer = [];
+
+    // deciding on the first pair of first and last players
+    const _players = generateNextPlayers([], [], players.value);
+    nextFirstPlayerId = _players[0];
+    nextLastPlayerId = _players[1];
+    firstPlayers.push(nextFirstPlayerId);
+    lastPlayer.push(nextLastPlayerId);
+    
+    while ((nextFirstPlayerId != "" && nextLastPlayerId != "") || round == 0) {
+        round += 1;
+        console.log("NEW ROUND");
+        
+        var prevPrompt = await generateInitialPrompt();
+        var prevImage = await getNextImage(prevPrompt);
+        
+        await sendAIMessage(gameId.value, "Original prompt: " + prevPrompt, prevImage.toString(), round)
+        await setGameProgress(gameId.value, nextFirstPlayerId, round);
+        await delay(30000);
+        console.log(nextFirstPlayerId + " finished from round: " + round);
+
+        // slight delay to make sure the message is updated
+        await delay(5000);
+        prevPrompt = lastMessage.value;
+        prevImage = await getNextImage(prevPrompt);
+        await sendAIMessage(gameId.value, nextFirstPlayerId + " generated the following image: ", prevImage.toString(), round);
+
+
+        const shuffledKeys = Array.from(Object.keys(players.value)).sort(() => 0.5 - Math.random());
+        for (var key of shuffledKeys) {
+            if (key != nextLastPlayerId && key != nextFirstPlayerId) {
+                await setGameProgress(gameId.value, key, round);
+                await delay(30000);
+                console.log("another player finish from round: " + round);
+
+                // slight delay to make sure the message is updated
+                await delay(5000);
+                prevPrompt = lastMessage.value;
+                prevImage = await getNextImage(prevPrompt);
+                await sendAIMessage(gameId.value, nextFirstPlayerId + " generated the following image: ", prevImage.toString(), round);
+            }
+        }
+
+        await setGameProgress(gameId.value, nextLastPlayerId, round);
+        await delay(30000);
+        console.log("last player finish from round: " + round);
+
+        // slight delay to make sure the message is updated
+        await delay(5000);
+        prevPrompt = lastMessage.value;
+        prevImage = await getNextImage(prevPrompt);
+        await sendAIMessage(gameId.value, nextFirstPlayerId + " generated the following image: ", prevImage.toString(), round);
+
+        // deciding on the next pair of first and last players
+        const _players = generateNextPlayers(firstPlayers, lastPlayer, players.value);
+        nextFirstPlayerId = _players[0];
+        nextLastPlayerId = _players[1];
+        firstPlayers.push(nextFirstPlayerId);
+        lastPlayer.push(nextLastPlayerId);
+    }
+
+    await updateGameState(gameId.value, "ended");
+}
     
 watch(currentPlayerId, async () => {
-    console.log(currentPlayerId.value)
-    console.log(user.value.uid)
 
     if (promptWatcher != null) {
         promptWatcher();
-        promptWatcher = null
+        promptWatcher = null;
     }
     if (lastRound != roundNum.value) {
-        hasGone.value = false
+        hasGone.value = false;
     }
-    onTurn.value = false
+    onTurn.value = false;
     // if(prevUnsub) {
     //     prevUnsub();
     // }
 
     if (currentPlayerId.value == user.value.uid) {
-        onTurn.value = true
+        onTurn.value = true;
         // do game stuff
         // enable main chat interaction
         // update live message
@@ -516,11 +501,11 @@ watch(currentPlayerId, async () => {
         // if message is empty propagate previously generated image
         enableMainChat.value = true;
         handlePromptMessage();
-        console.log("my turn")
-        hasGone.value = true
+        console.log("my turn");
+        hasGone.value = true;
     } else {
-        console.log("not my turn")
-        enableMainChat.value = false
+        console.log("not my turn");
+        enableMainChat.value = false;
     }
 })
 
