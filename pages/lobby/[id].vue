@@ -37,7 +37,6 @@
             border-4
             text-offwhite
             font-gohu
-            cursor-pointer
             text-3xl
             drop-shadow-solid
             "
@@ -46,7 +45,7 @@
             <h3>Game Code:</h3>
             <div class="flex justify-between place-items-center">
               <h3>{{ gameId }}</h3>
-              <img src="~/assets/images/copy.svg" alt="Copy" class="w-6 h-6" />
+              <img src="~/assets/images/copy.svg" alt="Copy" class="w-6 h-6 cursor-pointer" />
             </div>
           </div>
           <h3 class="text-white text-xl">Share this code with your friends!</h3>

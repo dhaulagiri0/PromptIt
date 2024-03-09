@@ -32,7 +32,7 @@
     </div>
     <div v-else class="flex-1 w-fill" />
     <div :class="[backVisible ? '' : 'invisible']" @click="goBack">
-      <IconsBack />
+      <IconsBack class="cursor-pointer" />
     </div>
   </div>
 </template>
