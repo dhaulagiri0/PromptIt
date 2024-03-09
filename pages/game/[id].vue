@@ -165,12 +165,12 @@ l<template>
 <script setup lang="ts">
 import { useGameStore } from '~/stores/game'; 
 const { subscribeMessages, sendMessage } = useChat();
+const { updateGameState } = useGameListeners();
 import { onBeforeMount } from 'vue';
 const { getCurrentUser } = useAuth();
 const gameStore = useGameStore();
 const user = ref(null);
 const newMessage = ref<string>('');
-const gameId = "williamChat"
 
 type Message = {
   text: string;
@@ -179,7 +179,7 @@ type Message = {
   userName: string | undefined;
 };
 
-const { hostId, players, gameStatus } = storeToRefs(gameStore);
+const { hostId, players, gameStatus, gameId } = storeToRefs(gameStore);
 
 const allMessages = ref<Message[]>([]);
 
@@ -190,7 +190,7 @@ onBeforeMount(async () => {
 
     console.log(user.value)
 
-    subscribeMessages(gameId, 
+    subscribeMessages(gameId.value, 
         (messages: Message[]) => {
             console.log(messages);
             console.log(messages.map((message: Message) => message.text));
@@ -204,11 +204,15 @@ onBeforeMount(async () => {
                         userName:message["userName"],
                     });
                 });
-        });
+    });
+    // update current game state
+    if (user.value.uid == hostId.value) {
+        updateGameState(gameId.value, "started");
+    }
 })
 
 async function handleSendMessage() {
-  await sendMessage(newMessage.value, gameId);
+  await sendMessage(newMessage.value, gameId.value);
   newMessage.value = '';
 }
 
