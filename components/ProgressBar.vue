@@ -35,7 +35,6 @@ onBeforeMount(() => {
       if (spentDuration.value < props.duration) {
         spentDuration.value += 1
         progress.value = parseInt(((props.duration - spentDuration.value) / props.duration) * 100);
-        console.log("Progress = ", parseInt(progress.value));
       }
   }, 1000)
 })

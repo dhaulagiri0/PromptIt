@@ -2,7 +2,7 @@
   <div class="bg-darkergrey h-screen font-gohu overflow-x-hidden flex flex-col">
     <Header :back-visible="true" :progress="true">
       <ProgressBar duration="30" color="richpink" :key="reset" :roundNumber="roundNum"
-        :currPlayer="`${currentPlayerId == 1 ? '' : currentPlayerId}`" />
+        :currPlayer="`${currentPlayerId == 1 ? '' : currentPlayerName}`" />
     </Header>
     <main class="grow flex flex-row justify-center space-x-4 px-4 pb-4 h-5/6">
       <div class="flex flex-col basis-1/4 h-fill space-y-4">
@@ -298,6 +298,7 @@ const router = useRouter();
 var lastMessage = ref("");
 var lastImage: string = "";
 var lastRound = 0;
+var currentPlayerName = ref("");
 const renderImgIndex = ref(-1);
 var promptWatcher = null;
 import type { Unsubscribe } from 'firebase/auth';
@@ -356,7 +357,7 @@ onBeforeMount(async () => {
   }
 
   watch(currentPlayerId, async () => {
-
+    currentPlayerName.value = getUserNameFromId(currentPlayerId.value)
     if (promptWatcher != null) {
       promptWatcher();
       promptWatcher = null;
@@ -391,6 +392,16 @@ onBeforeMount(async () => {
     }
   })
 })
+
+function getUserNameFromId(playerId: string):string {
+    for (let key in players.value) {
+        console.log(key)
+        if(key == playerId) {
+            return players.value[key].name
+        }
+    }
+    return ""
+}
 
 const reset = ref<number>(0);
 
