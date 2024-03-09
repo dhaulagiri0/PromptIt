@@ -1,7 +1,8 @@
 <template>
   <div class="bg-darkergrey h-screen font-gohu overflow-x-hidden flex flex-col">
     <Header :back-visible="true" :progress="true">
-      <ProgressBar duration="30" color="richpink" :key="reset" :roundNumber="roundNum" :currPlayer="`${ currentPlayerId == 1 ? '' : currentPlayerId}`" />
+      <ProgressBar duration="30" color="richpink" :key="reset" :roundNumber="roundNum"
+        :currPlayer="`${currentPlayerId == 1 ? '' : currentPlayerId}`" />
     </Header>
     <main class="grow flex flex-row justify-center space-x-4 px-4 pb-4 h-5/6">
       <div class="flex flex-col basis-1/4 h-fill space-y-4">
@@ -38,10 +39,12 @@
                                                     text-ellipsis
                                                     "
                           v-if="(index == 0 && user != null && message.sentBy != user.uid) || (user != null && message.sentBy != user.uid && allMessages[index - 1] != undefined && allMessages[index - 1].sentBy != message.sentBy)">
-                          {{ message.userName }}
+                          <p class="text-wrap">
+                            {{ message.userName }}
+                          </p>
                         </div>
                         <div class="
-                                                    w-fit
+                                                    w-full
                                                     rounded-vl
                                                     overflow-hidden
                                                     p-3
@@ -51,7 +54,9 @@
                                                     text-xl
                                                     "
                           :class="`${user != null && message.sentBy != user.uid ? 'bg-grapefruit text-black' : 'justify-self-end bg-richblue text-offwhite'}`">
-                          {{ message.text }}
+                          <p class="text-wrap">
+                            {{ message.text }}
+                          </p>
                         </div>
 
                       </div>
