@@ -369,8 +369,8 @@ onBeforeMount(async () => {
       enableMainChat.value = true;
       handlePromptMessage();
       console.log("my turn");
-      await delay(30000);
       resetTimer();
+      await delay(30000);
       enableMainChat.value = false;
       if (!hasGone.value) {
         await sendLiveMessage(gameId.value, user.value, "I give up!", roundNum.value);
