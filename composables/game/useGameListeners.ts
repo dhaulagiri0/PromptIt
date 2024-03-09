@@ -24,7 +24,7 @@ import { AIMessage } from '../useTypes';
         const arr = [...str];                  // Convert String to Array
         const len = arr.length;
         // obfuscate 80%
-        var i: number = (len * 0.8)|0;
+        var i: number = (len * 0.9)|0;
         i = Math.min(Math.abs(i), len);        // Fix to Positive and not > len 
         while (i) {
           const r = ~~(Math.random() * len);

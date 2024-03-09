@@ -529,7 +529,7 @@ async function handleGameHost() {
 
         // triggers currentPlayerIdChange
         await setGameProgress(gameId.value, "1", round);
-        await sendAIMessage(gameId.value, "NOW FOR ROUND TWO!", "", round);
+        await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
         console.log("reset id " + round);
         // slight delay to make sure the message is updated
         await delay(5000);
