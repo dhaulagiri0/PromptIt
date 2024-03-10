@@ -39,15 +39,21 @@ Although each instance would run locally, they all connect to the same database 
 
 # How to Play:
 * Register and sign in with a Google account.
+![image](https://github.com/dhaulagiri0/PromptIt/assets/29320673/376d4e04-88d2-4e2c-a09f-f89d5c7b0454)
 * Create a game or join a game using a unique game code
 * Share your game code with your friends (the more the merrier)
+![image](https://github.com/dhaulagiri0/PromptIt/assets/29320673/6697f5ce-4d0c-4bc3-ade4-9cb3f2e63563)
 * Start the game and read through a short tutorial.
+![image](https://github.com/dhaulagiri0/PromptIt/assets/29320673/8a46c43d-08c7-4fb2-b551-2c67278c3de0)
 * Players take turns describing AI-generated images provided by the Stability AI.
 * Players can see each other writing into the main chat, but most of these inputs will be obfuscated realtime.
+![image](https://github.com/dhaulagiri0/PromptIt/assets/29320673/3a32ab31-b480-4420-8988-5b85894ac963)
 * Descriptions are used to generate new images for the next player to describe.
+![image](https://github.com/dhaulagiri0/PromptIt/assets/29320673/da49d534-d7b7-4636-b32b-0872c416538e)
 * Upon submitting their description, players are given unrestricted view to the generated images and other player prompts.
 * Players can engage in side challenges to spice up the gameplay.
 * At the end of each round, Perplexity AI evaluates descriptions based on accuracy and creativity at the end of each round while also checking against a list of dynamically generated side challenges to determine the number of points players get.
+![image](https://github.com/dhaulagiri0/PromptIt/assets/29320673/614839a2-e7ec-4818-bf24-7be8a62148d9)
 * The game continues until every player has gone first in a round (so for n players there would be n rounds).
 * The player with the highest combined points at the end of the game wins.
 
