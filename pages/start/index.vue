@@ -30,7 +30,7 @@
               <div class="mb-4">
                 <p>Each game is split into multiple rounds.</p>
                 <p>Each round is split into multiple turns. One turn for each player.</p>
-                <p>On your turn, you will see an.</p>
+                <p>On your turn, you will see an image.</p>
                 <p>Describing this image as detailedly as possible, earns you points.</p>
                 <p>Describing it creatively will also earn you points.</p>
                 <p>Your description will generate another image for the next player to see.</p>
@@ -86,7 +86,7 @@ function delay(ms: number) {
 
 onMounted(async () => {
   // wait 15 seconds
-  await delay(150000);
+  await delay(15000);
   // push to game page
   router.push("/game/" + gameId.value)
 })
