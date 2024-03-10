@@ -24,7 +24,7 @@ The platform is also designed from the ground up with Figma.
 * Google auth for easy sign up and login management.
 
 # Setting up the server locally
-We have an instance of the app set-up on Netlify at https://main--promptit.netlify.app/ (note that while the main functionalities of the app works, it could be buggy at times). <br /> It is also quite simple to run this game locally. 
+We have an instance of the app set-up on Netlify at https://main--promptit.netlify.app/ (note that while the main functionalities of the app works, it could be buggy at times). The app should also be accessed through a computer instead of a mobile device. <br /> It is also quite simple to run this game locally. 
 Node and npm are required to run the project. <br /> Each player would need to clone the repository and run the following command:
 ```
 npm i
