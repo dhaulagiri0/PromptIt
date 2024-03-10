@@ -164,7 +164,7 @@
                       {{ message.text }}
                     </p>
                     <p class="w-fill text-wrap" v-else>{{ message.text.split(" ").map((str) => obfuscater(str,
-      "*")).join(" ") }}</p>
+      "■")).join(" ") }}</p>
                   </div>
                   <div class="
                                         w-fit
