@@ -286,6 +286,7 @@ import { useGameStore } from '~/stores/game';
 const { subscribeMessages, sendMessage } = useChat();
 const { updateGameState, listenLiveMessage, sendLiveMessage, obfuscater } = useGameListeners();
 const { generateNextPlayers, setGameProgress } = useGameUtils();
+const { clearTasks, addIndividualTask, addGeneralTasks } = useTasks();
 const { getCurrentUser } = useAuth();
 const { sendAIMessage } = useChat();
 const { getNextImage, generateInitialPrompt, generateInitialImage, rateCreativity, rateCloseNess, generateNextImage } = useGameSystems();
@@ -304,6 +305,7 @@ var promptWatcher = null;
 import type { Unsubscribe } from 'firebase/auth';
 import useGameSystems from '~/composables/game/useGameSystems';
 import useChat from '~/composables/firebase/useChat';
+import useTasks from '~/composables/playerTasks/useTasks';
 const config = useRuntimeConfig();
 const aiName = config.public.aiName;
 
@@ -521,7 +523,6 @@ async function handleGameHost() {
         // slight delay to make sure the message is updated
         await delay(5000);
         prevPrompt = lastMessage.value;
-        console.log("KEY", key)
         prevImageURL = await generateNextImage(gameId.value, prevPrompt, round, key);
         prevImage = await getNextImage(gameId.value, prevImageURL);
         await sendAIMessage(gameId.value, getUserNameFromId(key) + " wrote a description that generated the following image: ", prevImage.toString(), round);
@@ -553,10 +554,16 @@ async function handleGameHost() {
     await handleRoundEnd(round);
 
     if (round + 1 <= players.value.length) {
-      await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
-      console.log("reset id " + round);
-      // slight delay to make sure the message is updated
-      await delay(5000);
+        await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
+        console.log("reset id " + round);
+
+        await clearTasks(gameId.value);
+        await addGeneralTasks(gameId.value)
+        for (var key in players.value) {
+            await addIndividualTask(gameId.value, key);
+        }
+        // slight delay to make sure the message is updated
+        await delay(5000);
     }
   }
 

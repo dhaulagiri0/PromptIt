@@ -17,6 +17,161 @@ import {
 export default function() {
   const nuxtApp = useNuxtApp();
   const db = nuxtApp.$firestore;
+  const uncommonWords: string[] = [
+    "Esoteric",
+    "Ubiquitous",
+    "Serendipity",
+    "Idiosyncratic",
+    "Epitome",
+    "Ephemeral",
+    "Opaque",
+    "Altruistic",
+    "Cacophony",
+    "Euphemism",
+    "Colloquial",
+    "Paradox",
+    "Quixotic",
+    "Reticent",
+    "Taciturn",
+    "Vicarious",
+    "Zealous",
+    "Panacea",
+    "Paradigm",
+    "Quagmire",
+    "Labyrinth",
+    "Abstruse",
+    "Discombobulate",
+    "Exacerbate",
+    "Flummox",
+    "Ineffable",
+    "Mellifluous",
+    "Ostentatious",
+    "Prosaic",
+    "Recalcitrant",
+    "Vicissitude",
+    "Cogent",
+    "Diatribe",
+    "Efficacious",
+    "Frivolous",
+    "Gregarious",
+    "Harbinger",
+    "Incendiary",
+    "Juxtaposition",
+    "Laconic",
+    "Maelstrom",
+    "Nadir",
+    "Obfuscate",
+    "Palliate",
+    "Quotidian",
+    "Rancorous",
+    "Sagacious",
+    "Tumultuous",
+    "Ubiquity",
+    "Vehement"
+  ];
+
+  const commonWords: string[] = [
+    'a',
+    'about',
+    'all',
+    'also',
+    'and',
+    'as',
+    'at',
+    'be',
+    'because',
+    'but',
+    'by',
+    'can',
+    'come',
+    'could',
+    'day',
+    'do',
+    'even',
+    'find',
+    'first',
+    'for',
+    'from',
+    'get',
+    'give',
+    'go',
+    'have',
+    'he',
+    'her',
+    'here',
+    'him',
+    'his',
+    'how',
+    'I',
+    'if',
+    'in',
+    'into',
+    'it',
+    'its',
+    'just',
+    'know',
+    'like',
+    'look',
+    'make',
+    'man',
+    'many',
+    'me',
+    'more',
+    'my',
+    'new',
+    'no',
+    'not',
+    'now',
+    'of',
+    'on',
+    'one',
+    'only',
+    'or',
+    'other',
+    'our',
+    'out',
+    'people',
+    'say',
+    'see',
+    'she',
+    'so',
+    'some',
+    'take',
+    'tell',
+    'than',
+    'that',
+    'the',
+    'their',
+    'them',
+    'then',
+    'there',
+    'these',
+    'they',
+    'thing',
+    'think',
+    'this',
+    'those',
+    'time',
+    'to',
+    'two',
+    'up',
+    'use',
+    'very',
+    'want',
+    'way',
+    'we',
+    'well',
+    'what',
+    'when',
+    'which',
+    'who',
+    'will',
+    'with',
+    'would',
+    'year',
+    'you',
+    'your',
+  ];
 
   // clears general and indiv tasks
   async function clearTasks(
@@ -91,10 +246,7 @@ export default function() {
     )
   }
 
-  // pick n tasks from a given array of tasks
-  // and converts them into a dictionary of
-  // task ids to tasks
-  function pickRandomTasks(arr: any[], n: number): {} {
+  function picRand(arr: any[], n: number): any[] {
     const shuffled = Array.from(arr).sort(() => 0.5 - Math.random());
     var selected;
     if (n <= arr.length) {
@@ -102,7 +254,14 @@ export default function() {
     } else {
       selected = shuffled;
     }
+    return selected
+  }
 
+  // pick n tasks from a given array of tasks
+  // and converts them into a dictionary of
+  // task ids to tasks
+  function pickRandomTasks(arr: any[], n: number): {} {
+    const selected:any[] = picRand(arr, n)
     var tasks = {};
     selected.forEach(task => {
       tasks[task["id"]] = task;
@@ -143,14 +302,23 @@ export default function() {
   // firebase to the given player for given game
   async function addGeneralTasks(
     gameId: string,
-    numTasks: number = 5,
+    numTasks: number = 2,
   ) {
     const docRef = doc(db, "games", gameId)
     const generalTasks = (await retrieveTasks())["general"]["tasks"];
     const selectedTasks = pickRandomTasks(generalTasks, numTasks);
+    for (var key in selectedTasks) {
+        if (key == "wordSet") {
+            const selectedWords = picRand(uncommonWords, 5);
+            selectedTasks[key].description = "Score up to 10 points by including the following words in your prompts : " + selectedWords.join(" ")
+        } else if (key == "wordBan") {
+            const selectedWords = picRand(commonWords, 5);
+            selectedTasks[key].description = "Score up to 10 points by excluding the following words in your prompts : " + selectedWords.join(" ")
+        };
+    }
     const docSnap = checkGame(gameId);
     if (docSnap != null) {
-      await setDoc(docRef, { "generalTasks": selectedTasks }, { merge: true });
+      await updateDoc(docRef, { "generalTasks": selectedTasks });
       return "success";
     } else {
       console.log("error retrieving game info!");
@@ -163,7 +331,7 @@ export default function() {
   async function addIndividualTask(
     gameId: string,
     playerId: string,
-    numTasks: number = 5,
+    numTasks: number = 3,
   ) {
     const indivTasks = (await retrieveTasks())["individual"]["tasks"];
     const selectedTasks = pickRandomTasks(indivTasks, numTasks);
