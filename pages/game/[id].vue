@@ -282,6 +282,7 @@
 <script setup lang="ts">
 import { useGameStore } from '~/stores/game';
 const { subscribeMessages, sendMessage } = useChat();
+const { includeSetOfWords, hardWordLimit, excludeWords, individualWordCharLimit } = generalTaskVerification();
 const { updateGameState, listenLiveMessage, sendLiveMessage, obfuscater } = useGameListeners();
 const { generateNextPlayers, setGameProgress } = useGameUtils();
 const { clearTasks, addIndividualTask, addGeneralTasks } = useTasks();
@@ -474,14 +475,14 @@ async function handlePromptMessage() {
   })
 }
 
-var playersToPoints: {[name:string] : Number} = {};
+var playersToPoints: { [name: string]: Number } = {};
 async function handleGameHost() {
   var nextFirstPlayerId = "";
   var nextLastPlayerId = "";
   var round = 0;
   var firstPlayers = [];
   var lastPlayer = [];
-  
+
 
   //initialize dictionary of players to points
   for (var key in players.value) {
@@ -561,16 +562,16 @@ async function handleGameHost() {
     await handleRoundEnd(round);
 
     if (round + 1 <= players.value.length) {
-        await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
-        console.log("reset id " + round);
+      await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
+      console.log("reset id " + round);
 
-        await clearTasks(gameId.value);
-        await addGeneralTasks(gameId.value)
-        for (var key in players.value) {
-            await addIndividualTask(gameId.value, key);
-        }
-        // slight delay to make sure the message is updated
-        await delay(5000);
+      await clearTasks(gameId.value);
+      await addGeneralTasks(gameId.value)
+      for (var key in players.value) {
+        await addIndividualTask(gameId.value, key);
+      }
+      // slight delay to make sure the message is updated
+      await delay(5000);
     }
   }
 
@@ -580,8 +581,7 @@ async function handleGameHost() {
   await updateGameState(gameId.value, "ended");
 }
 
-
-async function handleRoundEnd(round: number) {
+async function handleRoundEnd(round: number = 1) {
   await sendAIMessage(gameId.value, "Summary for round " + (round) + ":", "", round);
   await delay(2000)
   var winner = ""
@@ -589,17 +589,43 @@ async function handleRoundEnd(round: number) {
     const prompt = aiMessages.value.filter((message) => message.roundNum == round && message.sentBy == key)[0].text;
     var pts = await rateCreativity(initialPrompt, prompt) + await rateCloseNess(initialPrompt, prompt); //TODO: add on task verify check shit
     console.log(pts)
-    indivTasks[key].array.forEach(async element => { pts += await executeVerification(element.id, initialPrompt, prompt)});
+    console.log(indivTasks.value)
+    console.log(indivTasks.value[key])
+    console.log(generalTasks.value)
+    console.log(key)
+    for (let task in generalTasks.value) {
+      console.log(task)
+      console.log(generalTasks.value[task].id)
+      const generalID = generalTasks.value[task].id
+      const generalDesc = generalTasks.value[task].description
+      if (generalID == "wordSet") {
+        pts += includeSetOfWords(prompt, generalDesc.split(":")[1].split(" "));
+      }
+      if (generalID == "hardWordLimit") {
+        pts += hardWordLimit(prompt, 20);
+      }
+      if (generalID == "wordBan") {
+        pts += excludeWords(prompt, generalDesc.split(":")[1].split(" "));
+      }
+      if (generalID == "indWordLimit") {
+        pts += individualWordCharLimit(prompt, 8);
+      }
+    }
+    for (let task in indivTasks.value[key]) {
+      console.log(task)
+      console.log(indivTasks.value[key][task].id)
+      pts += await executeVerification(indivTasks.value[key][task].id, initialPrompt, prompt);
+    }
     playersToPoints[key] += pts;
     await sendAIMessage(gameId.value, players.value[key].name + " is now on " + (playersToPoints[key]) + " points!", "", round);
     await delay(2000)
   }
-  
+
 }
 
 async function handleGameEnd(round) {
-  
-  var maxPoints : Number = 0
+
+  var maxPoints: Number = 0
   let winner = "";
   for (let key in playersToPoints) {
     if (playersToPoints[key] > maxPoints) {
@@ -608,7 +634,7 @@ async function handleGameEnd(round) {
     }
   }
 
-  
+
   await sendAIMessage(gameId.value, "So the winner was.....", "", round);
   await delay(1000)
   await sendAIMessage(gameId.value, winner + "! Congratulations!", "", round);
