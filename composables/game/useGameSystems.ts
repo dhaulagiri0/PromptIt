@@ -14,7 +14,7 @@ import {
   update,
   setDoc
 } from 'firebase/firestore'
-import { ref, uploadBytes } from 'firebase/storage';
+import { ref, uploadBytes, getStorage, getDownloadURL } from 'firebase/storage';
 import { type User } from 'firebase/auth';
 import { storeToRefs } from 'pinia';
 import { Buffer } from 'buffer';
@@ -31,7 +31,6 @@ export default function() {
   function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-
 
   // generate initial prompt with perplexity
   // async function generateInitialPrompt(
@@ -82,8 +81,8 @@ export default function() {
           },
         ],
         cfg_scale: 7,
-        height: 512,
-        width: 512,
+        height: 360,
+        width: 640,
         steps: 20,
         samples: 1,
       }),
@@ -98,7 +97,6 @@ export default function() {
         finishReason: string
       }>
     }
-    console.log(data.value);
 
     const responseJSON = (await data.value) as GenerationResponse
     const image = Buffer.from(responseJSON.artifacts[0].base64, 'base64');
@@ -106,8 +104,6 @@ export default function() {
     try {
       const imageRef = ref(storage, `Images/${gameId}/${config.public.aiName}-${roundNum}.png`);
       const remoteRef = await uploadBytes(imageRef, image);
-      console.log("image: ", image);
-      console.log(responseJSON);
       return remoteRef.metadata.fullPath
     } catch (err: any) {
       throw createError({
@@ -136,8 +132,8 @@ export default function() {
           },
         ],
         cfg_scale: 7,
-        height: 512,
-        width: 512,
+        height: 360,
+        width: 640,
         steps: 20,
         samples: 1,
       }),
@@ -162,7 +158,8 @@ export default function() {
       const remoteRef = await uploadBytes(imageRef, image);
       console.log("image: ", image);
       console.log(responseJSON);
-      return remoteRef.metadata.fullPath
+      console.log(remoteRef.metadata.name);
+      return remoteRef.metadata.name;
     } catch (err: any) {
       throw createError({
         statusCode: err.statusCode || 500,
@@ -195,7 +192,8 @@ export default function() {
   async function getNextImage(prompt: string): Promise<URL> {
     await delay(1000)
     console.log("image delay")
-    const imageURL = new URL("https://en.anmosugoi.com/wp-content/uploads/2024/02/Sousou-no-Frieren-Frieren-portada.webp")
+    const imageMetaData = "yfNXC1ZqqFNhqKts34Vo179WDLV2-2.png"
+    const imageURL = new URL(`https://firebasestorage.googleapis.com/v0/b/promptit-cbdaa.appspot.com/o/Images%2FSkillIssue%2F${imageMetaData}?alt=media`)
     return imageURL
   }
 
