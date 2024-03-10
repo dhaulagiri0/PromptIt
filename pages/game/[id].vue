@@ -588,6 +588,7 @@ async function handleRoundEnd(round: number) {
   for (var key in players.value) {
     const prompt = aiMessages.value.filter((message) => message.roundNum == round && message.sentBy == key)[0].text;
     var pts = await rateCreativity(initialPrompt, prompt) + await rateCloseNess(initialPrompt, prompt); //TODO: add on task verify check shit
+    console.log(pts)
     indivTasks[key].array.forEach(async element => { pts += await executeVerification(element.id, initialPrompt, prompt)});
     playersToPoints[key] += pts;
     await sendAIMessage(gameId.value, players.value[key].name + " is now on " + (playersToPoints[key]) + " points!", "", round);

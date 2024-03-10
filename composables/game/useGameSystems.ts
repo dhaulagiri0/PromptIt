@@ -208,16 +208,14 @@ export default function() {
         frequency_penalty: 1
       })
     };
-    var data;
     var response : unknown; 
     var parsedResponse : Number;
-    do {
-      ({data} = await useFetch('https://api.perplexity.ai/chat/completions', options));
-      response = data.value.choices[0].message.content;
-      parsedResponse = parseInt(response);
-    } while (isNaN(parsedResponse))
-      
-      return (parsedResponse);
+    const {data} = await useFetch('https://api.perplexity.ai/chat/completions', options);
+    console.log(data.value)
+    response = data.value.choices[0].message.content;
+    parsedResponse = parseInt(response);
+    console.log(parsedResponse)
+    return parsedResponse || 0;
   }
   // given the original prompt and a user generated prompt
   // rate how closely they resemble each other
@@ -244,16 +242,15 @@ export default function() {
         frequency_penalty: 1
       })
     };
-    var data;
     var response : unknown;
     var parsedResponse : Number; 
-    do {
-    ({data} = await useFetch('https://api.perplexity.ai/chat/completions', options));
+    const {data} = await useFetch('https://api.perplexity.ai/chat/completions', options);
+    console.log(data.value)
     response = data.value.choices[0].message.content;
     parsedResponse = parseInt(response);
-  } while (isNaN(parsedResponse))
     
-    return (parsedResponse);
+    console.log(parsedResponse)
+    return (parsedResponse) || 0;
   }
 
   
