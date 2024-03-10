@@ -316,7 +316,7 @@ export type AIMessage = {
   roundNum: number;
 }
 
-const { hostId, players, generalTasks, indivTasks, currentPlayerId, roundNum, gameId } = storeToRefs(gameStore);
+const { hostId, players, generalTasks, indivTasks, currentPlayerId, roundNum, gameId, gameStatus } = storeToRefs(gameStore);
 
 const allMessages = ref<AIMessage[]>([]);
 const aiMessages = ref<AIMessage[]>([]);
@@ -385,8 +385,9 @@ onBeforeMount(async () => {
             await sendLiveMessage(gameId.value, user.value, "I give up!", roundNum.value);
         }
         hasGone.value = true;
-        await delay(5000);
       }
+      await delay(5000);
+      onTurn.value = false;
     } else {
       console.log("not my turn");
       await delay(5000);
@@ -394,7 +395,13 @@ onBeforeMount(async () => {
       enableMainChat.value = false;
       onTurn.value = false;
     }
-  })
+  });
+
+  watch(gameStatus, async () => {
+    if (gameStatus.value == "ended") {
+        router.push("/")
+    }
+  });
 })
 
 function getUserNameFromId(playerId: string):string {
@@ -488,7 +495,8 @@ async function handleGameHost() {
     var prevImage = await getNextImage(prevPrompt);
 
     await setGameProgress(gameId.value, nextFirstPlayerId, round);
-    await sendAIMessage(gameId.value, "Original prompt: " + prevPrompt, prevImage.toString(), round)
+    await sendAIMessage(gameId.value, "Original prompt: " + prevPrompt, "", round)
+    await sendAIMessage(gameId.value, "Describe this image as best as you can! ", prevImage.toString(), round)
     console.log(nextFirstPlayerId + "'s round: " + round);
     await delay(30000);
     console.log(nextFirstPlayerId + " finished from round: " + round);
@@ -539,19 +547,23 @@ async function handleGameHost() {
 
     await handleRoundEnd(round);
 
-    await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
-    console.log("reset id " + round);
-    // slight delay to make sure the message is updated
-    await delay(5000);
+    if (round + 1 <= players.value.length) {
+        await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
+        console.log("reset id " + round);
+        // slight delay to make sure the message is updated
+        await delay(5000);
+    }
   }
 
   console.log("game ended!")
+  await handleGameEnd(round);
+
   await updateGameState(gameId.value, "ended");
 }
 
 
 async function handleRoundEnd(round: number) {
-    await sendAIMessage(gameId.value, "Summary for round" + (round) + ":", "", round);
+    await sendAIMessage(gameId.value, "Summary for round " + (round) + ":", "", round);
     await delay(2000)
     var winner = ""
     var maxPts = 0
@@ -561,12 +573,21 @@ async function handleRoundEnd(round: number) {
             winner = players.value[key].name
             maxPts = pts
         }
-        await sendAIMessage(gameId.value, players.value[key].name + "earned " + (pts) + " points!", "", round);
+        await sendAIMessage(gameId.value, players.value[key].name + " earned " + (pts) + " points!", "", round);
         await delay(2000)
     }
     await sendAIMessage(gameId.value, "So the winner was.....", "", round);
     await delay(1000)
     await sendAIMessage(gameId.value, winner + "! Congratulations!", "", round);
-    await delay(20000)
+    await delay(5000)
+}
+
+async function handleGameEnd(round){
+    await sendAIMessage(gameId.value, "The game has ended!", "", round);
+    await delay(1000)
+    await sendAIMessage(gameId.value, "Thank you all for coming!", "", round);
+    await delay(1000)
+    await sendAIMessage(gameId.value, "Goodbye! :)", "", round);
+    await delay(1000)
 }
 </script>
