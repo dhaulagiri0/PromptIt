@@ -9,30 +9,8 @@
     flex 
     flex-col">
     <Header class="absolute mt-4 ml-6"/>
-    <main class="grow flex flex-row justify-center">
-      <div class="flex items-center gap-16">
-        <div class="w-80">
-          <UserNormal :text="username"/>
-          <div class="
-            border-white
-            rounded-vl
-            overflow-hidden
-            p-3
-            pl-5
-            pr-5
-            grow
-            bg-black
-            border-4
-            text-offwhite
-            font-gohu
-            text-3xl
-            "
-            >
-            <div class="flex flex-col justify-between place-items-center">
-              <h3>You are cringe</h3>
-            </div>
-          </div>
-        </div>
+    <main class="flex flex-row justify-center items-center w-fill h-full">
+      <div class="flex items-center">
           <div class="
             border-white
             rounded-vl
@@ -47,18 +25,27 @@
             text-xl
             "
             >
-            <div class="flex flex-col w-96 justify-between">
-              <h3>WHAT TO DO:</h3>
-              <div></div>
-              <br>
-              <!--TODO: Change colour to actual yellow-->
-              <h3 class="text-grapefruit">Individual Tasks:</h3>
-              <div v-if="user != null" v-for="task in indivTasks[user.uid]" 
-                :key="indivTasks">
-                <p>{{ task["description"] }}</p>
+            <div class="flex flex-col justify-between">
+              <h3 class="mb-4">WHAT TO DO:</h3>
+              <div class="mb-4">
+                <p>Each game is split into multiple rounds.</p>
+                <p>Each round is split into multiple turns. One turn for each player.</p>
+                <p>On your turn, you will see an.</p>
+                <p>Describing this image as detailedly as possible, earns you points.</p>
+                <p>Describing it creatively will also earn you points.</p>
+                <p>Your description will generate another image for the next player to see.</p>
               </div>
               <br>
-              <h3 class="text-richred">Watch out for the saboteur!</h3>
+              <!--TODO: Change colour to actual yellow-->
+              <h3 class="text-richblue">General Tasks:</h3>
+              <h3 class="text-offwhite mb-4">These tasks are for everyone. Complete to earn points.</h3>
+              <h3 class="text-richyellow">Individual Tasks:</h3>
+              <h3 class="text-offwhite">These tasks are exclusive to you. Complete to earn extra points.</h3>
+              <!-- <div v-if="user != null && indivTasks != undefined" v-for="task in indivTasks[user.uid]" 
+                :key="indivTasks">
+                <p>{{ task["description"] }}</p>
+              </div> -->
+              <br>
             </div>
           </div>
       </div>
@@ -88,8 +75,6 @@ onBeforeMount(async () => {
     }
 
     const gameSnap = await checkGame(gameId.value)
-    console.log(gameId.value)
-    console.log(gameSnap)
     if (!gameSnap) {
       goBack();
     }
@@ -100,8 +85,8 @@ function delay(ms: number) {
 }
 
 onMounted(async () => {
-  // wait 10 seconds 
-  await delay(5000);
+  // wait 15 seconds
+  await delay(150000);
   // push to game page
   router.push("/game/" + gameId.value)
 })

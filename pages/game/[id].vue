@@ -220,58 +220,56 @@
       </div>
       <div class="flex-1 basis-1/4 h-fill grid space-y-4">
         <div class="
-                    border-black
+                    border-offwhite
                     rounded-vl
                     overflow-hidden
                     p-3
                     pl-5
                     pr-5
-                    bg-offwhite
+                    bg-black
                     border-4
-                    text-black
                     font-gohu
                     text-xl
                     grow
                     drop-shadow-solid
                     ">
-          <p class="mb-4 text-xl">General Challenges:</p>
+          <p class="mb-4 text-xl text-richblue">General Challenges:</p>
           <div v-for="(task, index) in generalTasks" :key="task">
-            <div class="
+            <div class="    mb-4
                             container
                             flex
                             flex-col
                             items-left
                             ">
-              <p class="text-m block">{{ index + ". " + task.name }}</p>
-              <p class="text-s mb-4 block">{{ task.description }}</p>
+              <p class="text-m block text-richpink">{{ task.name }}</p>
+              <p class="text-s mb-4 block text-offwhite">{{ task.description }}</p>
             </div>
           </div>
         </div>
         <div class="
-                    border-black
+                    border-offwhite
                     rounded-vl
                     overflow-hidden
                     p-3
                     pl-5
                     pr-5
-                    bg-offwhite
+                    bg-black
                     border-4
-                    text-black
                     font-gohu
                     text-xl
                     grow
                     drop-shadow-solid
                     ">
-          <p class="mb-4 text-xl">Individual Challenges:</p>
+          <p class="mb-4 text-xl text-richyellow">Individual Challenges:</p>
           <div v-if="user" v-for="(task, index) in indivTasks[user.uid]" :key="task">
-            <div class="
+            <div class="    mb-4
                             container
                             flex
                             flex-col
                             items-left
                             ">
-              <p class="text-m block">{{ index + ". " + task.name }}</p>
-              <p class="text-s mb-4 block">{{ task.description }}</p>
+              <p class="text-m block text-richpink">{{ task.name }}</p>
+              <p class="text-s mb-4 block text-offwhite">{{ task.description }}</p>
             </div>
           </div>
         </div>
@@ -286,6 +284,7 @@ import { useGameStore } from '~/stores/game';
 const { subscribeMessages, sendMessage } = useChat();
 const { updateGameState, listenLiveMessage, sendLiveMessage, obfuscater } = useGameListeners();
 const { generateNextPlayers, setGameProgress } = useGameUtils();
+const { clearTasks, addIndividualTask, addGeneralTasks } = useTasks();
 const { getCurrentUser } = useAuth();
 const { sendAIMessage } = useChat();
 const { getNextImage, generateInitialPrompt, generateInitialImage, rateCreativity, rateCloseNess, generateNextImage } = useGameSystems();
@@ -306,6 +305,7 @@ var initialPrompt: string;
 import type { Unsubscribe } from 'firebase/auth';
 import useGameSystems from '~/composables/game/useGameSystems';
 import useChat from '~/composables/firebase/useChat';
+import useTasks from '~/composables/playerTasks/useTasks';
 const config = useRuntimeConfig();
 const aiName = config.public.aiName;
 
@@ -561,10 +561,16 @@ async function handleGameHost() {
     await handleRoundEnd(round);
 
     if (round + 1 <= players.value.length) {
-      await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
-      console.log("reset id " + round);
-      // slight delay to make sure the message is updated
-      await delay(5000);
+        await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
+        console.log("reset id " + round);
+
+        await clearTasks(gameId.value);
+        await addGeneralTasks(gameId.value)
+        for (var key in players.value) {
+            await addIndividualTask(gameId.value, key);
+        }
+        // slight delay to make sure the message is updated
+        await delay(5000);
     }
   }
 

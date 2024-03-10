@@ -37,4 +37,11 @@ export default function() {
             return 5
         } else {return 0}
     }
+
+    return {
+        includeSetOfWords,
+        hardWordLimit,
+        excludeWords,
+        individualWordCharLimit
+    }
 }

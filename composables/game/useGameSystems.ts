@@ -36,7 +36,6 @@ export default function() {
   async function generateInitialPrompt(
     gameId: string, roundNum: number
   ): Promise<string> {
-    console.log("generateInitialPrompt")
     const options = {
       method: 'POST',
       headers: {
@@ -62,14 +61,12 @@ export default function() {
     const prompt = data.value.choices[0].message.content;
     addPromptToFirebase(gameId, roundNum, prompt);
     // prompt = "Generate an image based on a worn-out detective's office, with a dusty bookshelf filled with mysteriously label-less books and a ticking clock on the desk, alongside a magnifying glass and a smoky pipe lying nearby."
-    console.log("Initial Prompt ", prompt);
     return prompt;
   }
 
   async function generateInitialImage(
     gameId: String, imagePrompt: string, roundNum: number
   ) {
-    console.log("generateInitialImage", imagePrompt)
     const options = {
       method: 'POST',
       headers: {
@@ -84,15 +81,14 @@ export default function() {
           },
         ],
         cfg_scale: 7,
-        height: 512,
-        width: 512,
+        height: 384,
+        width: 640,
         steps: 20,
         samples: 1,
       }),
     };
 
     const { data } = await useFetch('https://api.stability.ai/v1/generation/stable-diffusion-v1-6/text-to-image', options);
-    console.log(data.value);
 
     interface GenerationResponse {
       artifacts: Array<{
@@ -103,13 +99,11 @@ export default function() {
     }
 
     const responseJSON = (await data.value) as GenerationResponse
-    console.log(responseJSON)
     const image = Buffer.from(responseJSON.artifacts[0].base64, 'base64');
 
     try {
       const imageRef = ref(storage, `Images/${gameId}/${config.public.aiName}-${roundNum}.png`);
       const remoteRef = await uploadBytes(imageRef, image);
-      console.log(remoteRef.metadata.name);
       return remoteRef.metadata.name
       // return "ppQVTG5oIoS15yieSbSAbkqHqax2-2.png"
     } catch (err: any) {
@@ -122,9 +116,8 @@ export default function() {
   }
 
   async function generateNextImage(
-    gameId: String, imagePrompt: string, roundNum: number, userID
+    gameId: string, imagePrompt: string, roundNum: number, userID: string
   ) {
-    console.log("generateNextImage", imagePrompt)
     const options = {
       method: 'POST',
       headers: {
@@ -139,8 +132,8 @@ export default function() {
           },
         ],
         cfg_scale: 7,
-        height: 512,
-        width: 512,
+        height: 384,
+        width: 640,
         steps: 20,
         samples: 1,
       }),
@@ -155,16 +148,13 @@ export default function() {
         finishReason: string
       }>
     }
-    console.log(data.value);
 
     const responseJSON = (await data.value) as GenerationResponse
     const image = Buffer.from(responseJSON.artifacts[0].base64, 'base64');
-    console.log(responseJSON);
 
     try {
       const imageRef = ref(storage, `Images/${gameId}/${userID}-${roundNum}.png`);
       const remoteRef = await uploadBytes(imageRef, image);
-      console.log(remoteRef.metadata.name);
       return remoteRef.metadata.name;
     } catch (err: any) {
       throw createError({
@@ -178,15 +168,12 @@ export default function() {
   async function addPromptToFirebase(
     gameId: string, roundNum: number, prompt: string
   ): Promise<string> {
-    console.log("addPromptToFirebase")
     try {
       const docRef = doc(db, "games/", gameId);
       const roundId: string = `rounds.${roundNum}`
-      console.log("roundId: ", roundId)
       const promptDoc = await updateDoc(docRef, {
         [roundId]: arrayUnion(prompt)
       })
-      console.log("Prompt added to firebase", promptDoc)
       return promptDoc;
     } catch (e: any) {
       throw createError({
@@ -271,10 +258,8 @@ export default function() {
 
   
   async function getNextImage(gameId: string, imageMetaData: string): Promise<URL> {
-    console.log("getNextImage", imageMetaData)
     await delay(5000)
     const imageURL = new URL(`https://firebasestorage.googleapis.com/v0/b/promptit-cbdaa.appspot.com/o/Images%2F${gameId}%2F${imageMetaData}?alt=media`)
-    console.log("Image URL: ", imageURL)
     return imageURL
   }
 

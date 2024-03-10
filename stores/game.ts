@@ -26,6 +26,8 @@ export const useGameStore = defineStore('game_states', () => {
 
     // should only be used with subscribeGameState from useGameListeners
     function updateState(gameData: DocumentData) {
+        console.log(gameData)
+        console.log(gameData["indivTasks"])
         // console.log(gameData);
         gameId.value = gameData["gameId"];
         hostId.value = gameData["hostId"];

@@ -55,7 +55,6 @@ export default function() {
     }
 
     try {
-      console.log("here")
       const messagesRef = collection(db, 'messages/AIChats/' + chatId);
       const user = await getCurrentUser();
       const messagesDoc = await addDoc(messagesRef, {
