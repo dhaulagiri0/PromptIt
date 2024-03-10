@@ -288,7 +288,7 @@ const { updateGameState, listenLiveMessage, sendLiveMessage, obfuscater } = useG
 const { generateNextPlayers, setGameProgress } = useGameUtils();
 const { getCurrentUser } = useAuth();
 const { sendAIMessage } = useChat();
-const { getNextImage, generateInitialPrompt, rateCreativity, rateCloseNess, } = useGameSystems();
+const { getNextImage, generateInitialPrompt, generateInitialImage, rateCreativity, rateCloseNess, generateNextImage } = useGameSystems();
 const gameStore = useGameStore();
 const user = ref(null);
 const newMessage = ref<string>('');
@@ -380,9 +380,9 @@ onBeforeMount(async () => {
       enableMainChat.value = false;
       if (!hasGone.value) {
         if (newPrompt.value != "") {
-            await sendLiveMessage(gameId.value, user.value, newPrompt.value, roundNum.value);
+          await sendLiveMessage(gameId.value, user.value, newPrompt.value, roundNum.value);
         } else {
-            await sendLiveMessage(gameId.value, user.value, "I give up!", roundNum.value);
+          await sendLiveMessage(gameId.value, user.value, "I give up!", roundNum.value);
         }
         hasGone.value = true;
       }
@@ -399,19 +399,19 @@ onBeforeMount(async () => {
 
   watch(gameStatus, async () => {
     if (gameStatus.value == "ended") {
-        router.push("/")
+      router.push("/")
     }
   });
 })
 
-function getUserNameFromId(playerId: string):string {
-    for (let key in players.value) {
-        console.log(key)
-        if(key == playerId) {
-            return players.value[key].name
-        }
+function getUserNameFromId(playerId: string): string {
+  for (let key in players.value) {
+    console.log(key)
+    if (key == playerId) {
+      return players.value[key].name
     }
-    return ""
+  }
+  return ""
 }
 
 const reset = ref<number>(0);
@@ -491,8 +491,10 @@ async function handleGameHost() {
     round += 1;
     console.log("NEW ROUND");
 
-    var prevPrompt = await generateInitialPrompt();
-    var prevImage = await getNextImage(prevPrompt);
+    var prevPrompt = await generateInitialPrompt(gameId.value, round);
+    var prevImageURL = await generateInitialImage(gameId.value, prevPrompt, round);
+
+    var prevImage = await getNextImage(gameId.value, prevImageURL);
 
     await setGameProgress(gameId.value, nextFirstPlayerId, round);
     await sendAIMessage(gameId.value, "Original prompt: " + prevPrompt, "", round)
@@ -504,8 +506,9 @@ async function handleGameHost() {
     // slight delay to make sure the message is updated
     await delay(5000);
     prevPrompt = lastMessage.value;
-    prevImage = await getNextImage(prevPrompt);
-    await sendAIMessage(gameId.value, getUserNameFromId(nextFirstPlayerId) + " wrote a description that generated the following following image: ", prevImage.toString(), round);
+    prevImageURL = await generateNextImage(gameId.value, prevPrompt, round);
+    prevImage = await getNextImage(gameId.value, prevImageURL);
+    await sendAIMessage(gameId.value, getUserNameFromId(nextFirstPlayerId) + " wrote a description that generated the following image: ", prevImage.toString(), round);
 
 
     const shuffledKeys = Array.from(Object.keys(players.value)).sort(() => 0.5 - Math.random());
@@ -519,7 +522,8 @@ async function handleGameHost() {
         // slight delay to make sure the message is updated
         await delay(5000);
         prevPrompt = lastMessage.value;
-        prevImage = await getNextImage(prevPrompt);
+        prevImageURL = await generateNextImage(gameId.value, prevPrompt, round);
+        prevImage = await getNextImage(gameId.value, prevImageURL);
         await sendAIMessage(gameId.value, getUserNameFromId(key) + " wrote a description that generated the following image: ", prevImage.toString(), round);
       }
     }
@@ -532,7 +536,8 @@ async function handleGameHost() {
     // slight delay to make sure the message is updated
     await delay(5000);
     prevPrompt = lastMessage.value;
-    prevImage = await getNextImage(prevPrompt);
+    prevImageURL = await generateNextImage(gameId.value, prevPrompt, round);
+    prevImage = await getNextImage(gameId.value, prevImageURL);
     await sendAIMessage(gameId.value, getUserNameFromId(nextLastPlayerId) + " wrote a description that generated the following image: ", prevImage.toString(), round);
 
     // deciding on the next pair of first and last players
@@ -548,10 +553,10 @@ async function handleGameHost() {
     await handleRoundEnd(round);
 
     if (round + 1 <= players.value.length) {
-        await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
-        console.log("reset id " + round);
-        // slight delay to make sure the message is updated
-        await delay(5000);
+      await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
+      console.log("reset id " + round);
+      // slight delay to make sure the message is updated
+      await delay(5000);
     }
   }
 
@@ -563,31 +568,31 @@ async function handleGameHost() {
 
 
 async function handleRoundEnd(round: number) {
-    await sendAIMessage(gameId.value, "Summary for round " + (round) + ":", "", round);
-    await delay(2000)
-    var winner = ""
-    var maxPts = 0
-    for (var key in players.value) {
-        const pts = Math.random() * 500 - 0
-        if (pts > maxPts) {
-            winner = players.value[key].name
-            maxPts = pts
-        }
-        await sendAIMessage(gameId.value, players.value[key].name + " earned " + (pts) + " points!", "", round);
-        await delay(2000)
+  await sendAIMessage(gameId.value, "Summary for round " + (round) + ":", "", round);
+  await delay(2000)
+  var winner = ""
+  var maxPts = 0
+  for (var key in players.value) {
+    const pts = Math.random() * 500 - 0
+    if (pts > maxPts) {
+      winner = players.value[key].name
+      maxPts = pts
     }
-    await sendAIMessage(gameId.value, "So the winner was.....", "", round);
-    await delay(1000)
-    await sendAIMessage(gameId.value, winner + "! Congratulations!", "", round);
-    await delay(5000)
+    await sendAIMessage(gameId.value, players.value[key].name + " earned " + (pts) + " points!", "", round);
+    await delay(2000)
+  }
+  await sendAIMessage(gameId.value, "So the winner was.....", "", round);
+  await delay(1000)
+  await sendAIMessage(gameId.value, winner + "! Congratulations!", "", round);
+  await delay(5000)
 }
 
-async function handleGameEnd(round){
-    await sendAIMessage(gameId.value, "The game has ended!", "", round);
-    await delay(1000)
-    await sendAIMessage(gameId.value, "Thank you all for coming!", "", round);
-    await delay(1000)
-    await sendAIMessage(gameId.value, "Goodbye! :)", "", round);
-    await delay(1000)
+async function handleGameEnd(round) {
+  await sendAIMessage(gameId.value, "The game has ended!", "", round);
+  await delay(1000)
+  await sendAIMessage(gameId.value, "Thank you all for coming!", "", round);
+  await delay(1000)
+  await sendAIMessage(gameId.value, "Goodbye! :)", "", round);
+  await delay(1000)
 }
 </script>
