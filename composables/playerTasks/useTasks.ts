@@ -310,10 +310,10 @@ export default function() {
     for (var key in selectedTasks) {
         if (key == "wordSet") {
             const selectedWords = picRand(uncommonWords, 5);
-            selectedTasks[key].description = "Score up to 10 points by including the following words in your prompts : " + selectedWords.join(" ")
+            selectedTasks[key].description = "Score up to 10 points by including the following words in your prompts: " + selectedWords.join(" ")
         } else if (key == "wordBan") {
             const selectedWords = picRand(commonWords, 5);
-            selectedTasks[key].description = "Score up to 10 points by excluding the following words in your prompts : " + selectedWords.join(" ")
+            selectedTasks[key].description = "Score up to 10 points by excluding the following words in your prompts: " + selectedWords.join(" ")
         };
     }
     const docSnap = checkGame(gameId);

@@ -29,11 +29,12 @@
               <h3 class="mb-4">WHAT TO DO:</h3>
               <div class="mb-4">
                 <p>Each game is split into multiple rounds.</p>
-                <p>Each round is split into multiple turns. One turn for each player.</p>
+                <p>Each of which is further split into multiple turns, for each player.</p>
                 <p>On your turn, you will see an image.</p>
-                <p>Describing this image as detailedly as possible, earns you points.</p>
-                <p>Describing it creatively will also earn you points.</p>
-                <p>Your description will generate another image for the next player to see.</p>
+                <p>Your goal is to describe this image to earn points.</p>
+                <p>You will be ranked based on the detail and creativity of your description.</p>
+                <p>Along with completions of the tasks listed below.</p>
+                <p>Your description will then generate a new image for the next player to then describe.</p>
               </div>
               <br>
               <!--TODO: Change colour to actual yellow-->

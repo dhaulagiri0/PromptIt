@@ -222,7 +222,9 @@
         <div class="
                     border-offwhite
                     rounded-vl
-                    overflow-hidden
+                    overflow-y-scroll
+                    no-scrollbar
+                    w-full
                     p-3
                     pl-5
                     pr-5
@@ -233,7 +235,7 @@
                     grow
                     drop-shadow-solid
                     ">
-          <p class="mb-4 text-xl text-richblue">General Challenges:</p>
+          <p class="mb-4 text-xl text-richblue ">General Challenges:</p>
           <div v-for="(task, index) in generalTasks" :key="task">
             <div class="    mb-4
                             container
@@ -249,7 +251,6 @@
         <div class="
                     border-offwhite
                     rounded-vl
-                    overflow-hidden
                     p-3
                     pl-5
                     pr-5
@@ -258,9 +259,12 @@
                     font-gohu
                     text-xl
                     grow
+                    w-full
                     drop-shadow-solid
+                    overflow-y-scroll
+                    no-scrollbar
                     ">
-          <p class="mb-4 text-xl text-richyellow">Individual Challenges:</p>
+          <p class="mb-4 text-xl text-richyellow overflow-y-scroll no-scrollbar">Individual Challenges:</p>
           <div v-if="user" v-for="(task, index) in indivTasks[user.uid]" :key="task">
             <div class="    mb-4
                             container
@@ -586,6 +590,7 @@ async function handleRoundEnd(round: number = 1) {
   await delay(2000)
   var winner = ""
   for (var key in players.value) {
+    console.log(aiMessages.value)
     const prompt = aiMessages.value.filter((message) => message.roundNum == round && message.sentBy == key)[0].text;
     var pts = await rateCreativity(initialPrompt, prompt) + await rateCloseNess(initialPrompt, prompt); //TODO: add on task verify check shit
     console.log(pts)
