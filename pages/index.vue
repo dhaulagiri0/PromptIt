@@ -8,7 +8,7 @@
           </div>
         </WindowCard> 
         <div class="text-center p-10">
-         <p class="text-offwhite text-2xl">A short description about the game here.</p>
+         <p class="text-offwhite text-2xl">Give us your best prompts!</p>
         </div>
       </div>
       <div class="right flex-1 basis-1/3 p-4">
