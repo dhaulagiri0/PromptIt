@@ -25,7 +25,8 @@ export default {
         'richred': '#C9373D',
         'richblue': '#368DBF',
         'darkergrey': '#2D2D2D',
-        'richpink': "#F09296"
+        'richpink': "#F09296",
+        'richyellow': '#E6B53A',
       },
       dropShadow: {
         'solid': '-5px 5px 0px rgba(0, 0, 0, 1.0)',
