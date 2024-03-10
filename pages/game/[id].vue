@@ -379,7 +379,11 @@ onBeforeMount(async () => {
       await delay(30000);
       enableMainChat.value = false;
       if (!hasGone.value) {
-        await sendLiveMessage(gameId.value, user.value, newPrompt.value, roundNum.value);
+        if (newPrompt.value != "") {
+            await sendLiveMessage(gameId.value, user.value, newPrompt.value, roundNum.value);
+        } else {
+            await sendLiveMessage(gameId.value, user.value, "I give up!", roundNum.value);
+        }
         hasGone.value = true;
         await delay(5000);
       }
@@ -532,6 +536,9 @@ async function handleGameHost() {
 
     // triggers currentPlayerIdChange
     await setGameProgress(gameId.value, "1", round);
+
+    await handleRoundEnd(round);
+
     await sendAIMessage(gameId.value, "NOW FOR ROUND " + (round + 1) + "!", "", round);
     console.log("reset id " + round);
     // slight delay to make sure the message is updated
@@ -542,4 +549,24 @@ async function handleGameHost() {
   await updateGameState(gameId.value, "ended");
 }
 
+
+async function handleRoundEnd(round: number) {
+    await sendAIMessage(gameId.value, "Summary for round" + (round) + ":", "", round);
+    await delay(2000)
+    var winner = ""
+    var maxPts = 0
+    for (var key in players.value) {
+        const pts = Math.random() * 500 - 0
+        if (pts > maxPts) {
+            winner = players.value[key].name
+            maxPts = pts
+        }
+        await sendAIMessage(gameId.value, players.value[key].name + "earned " + (pts) + " points!", "", round);
+        await delay(2000)
+    }
+    await sendAIMessage(gameId.value, "So the winner was.....", "", round);
+    await delay(1000)
+    await sendAIMessage(gameId.value, winner + "! Congratulations!", "", round);
+    await delay(20000)
+}
 </script>
