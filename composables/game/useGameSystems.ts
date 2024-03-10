@@ -122,10 +122,9 @@ export default function() {
   }
 
   async function generateNextImage(
-    gameId: String, imagePrompt: string, roundNum: number
+    gameId: String, imagePrompt: string, roundNum: number, userID
   ) {
     console.log("generateNextImage", imagePrompt)
-    const user = await getCurrentUser();
     const options = {
       method: 'POST',
       headers: {
@@ -163,7 +162,7 @@ export default function() {
     console.log(responseJSON);
 
     try {
-      const imageRef = ref(storage, `Images/${gameId}/${user.uid}-${roundNum}.png`);
+      const imageRef = ref(storage, `Images/${gameId}/${userID}-${roundNum}.png`);
       const remoteRef = await uploadBytes(imageRef, image);
       console.log(remoteRef.metadata.name);
       return remoteRef.metadata.name;

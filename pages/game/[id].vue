@@ -493,7 +493,6 @@ async function handleGameHost() {
 
     var prevPrompt = await generateInitialPrompt(gameId.value, round);
     var prevImageURL = await generateInitialImage(gameId.value, prevPrompt, round);
-
     var prevImage = await getNextImage(gameId.value, prevImageURL);
 
     await setGameProgress(gameId.value, nextFirstPlayerId, round);
@@ -506,7 +505,7 @@ async function handleGameHost() {
     // slight delay to make sure the message is updated
     await delay(5000);
     prevPrompt = lastMessage.value;
-    prevImageURL = await generateNextImage(gameId.value, prevPrompt, round);
+    prevImageURL = await generateNextImage(gameId.value, prevPrompt, round, nextFirstPlayerId);
     prevImage = await getNextImage(gameId.value, prevImageURL);
     await sendAIMessage(gameId.value, getUserNameFromId(nextFirstPlayerId) + " wrote a description that generated the following image: ", prevImage.toString(), round);
 
@@ -522,7 +521,7 @@ async function handleGameHost() {
         // slight delay to make sure the message is updated
         await delay(5000);
         prevPrompt = lastMessage.value;
-        prevImageURL = await generateNextImage(gameId.value, prevPrompt, round);
+        prevImageURL = await generateNextImage(gameId.value, prevPrompt, round, key);
         prevImage = await getNextImage(gameId.value, prevImageURL);
         await sendAIMessage(gameId.value, getUserNameFromId(key) + " wrote a description that generated the following image: ", prevImage.toString(), round);
       }
@@ -536,7 +535,7 @@ async function handleGameHost() {
     // slight delay to make sure the message is updated
     await delay(5000);
     prevPrompt = lastMessage.value;
-    prevImageURL = await generateNextImage(gameId.value, prevPrompt, round);
+    prevImageURL = await generateNextImage(gameId.value, prevPrompt, round, nextLastPlayerId);
     prevImage = await getNextImage(gameId.value, prevImageURL);
     await sendAIMessage(gameId.value, getUserNameFromId(nextLastPlayerId) + " wrote a description that generated the following image: ", prevImage.toString(), round);
 
