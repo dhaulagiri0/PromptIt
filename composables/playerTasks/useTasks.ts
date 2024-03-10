@@ -163,7 +163,7 @@ export default function() {
   async function addIndividualTask(
     gameId: string,
     playerId: string,
-    numTasks: number = 5,
+    numTasks: number = 1,
   ) {
     const indivTasks = (await retrieveTasks())["individual"]["tasks"];
     const selectedTasks = pickRandomTasks(indivTasks, numTasks);

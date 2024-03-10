@@ -289,6 +289,7 @@ const { generateNextPlayers, setGameProgress } = useGameUtils();
 const { getCurrentUser } = useAuth();
 const { sendAIMessage } = useChat();
 const { getNextImage, generateInitialPrompt, generateInitialImage, rateCreativity, rateCloseNess, generateNextImage } = useGameSystems();
+const { executeVerification } = useIndividualTaskVerification();
 const gameStore = useGameStore();
 const user = ref(null);
 const newMessage = ref<string>('');
@@ -301,6 +302,7 @@ var lastRound = 0;
 var currentPlayerName = ref("");
 const renderImgIndex = ref(-1);
 var promptWatcher = null;
+var initialPrompt: string;
 import type { Unsubscribe } from 'firebase/auth';
 import useGameSystems from '~/composables/game/useGameSystems';
 import useChat from '~/composables/firebase/useChat';
@@ -472,13 +474,19 @@ async function handlePromptMessage() {
   })
 }
 
-
+var playersToPoints: {[name:string] : Number} = {};
 async function handleGameHost() {
   var nextFirstPlayerId = "";
   var nextLastPlayerId = "";
   var round = 0;
   var firstPlayers = [];
   var lastPlayer = [];
+  
+
+  //initialize dictionary of players to points
+  for (var key in players.value) {
+    playersToPoints[key] = 0;
+  }
 
   // deciding on the first pair of first and last players
   const _players = generateNextPlayers([], [], players.value);
@@ -492,6 +500,7 @@ async function handleGameHost() {
     console.log("NEW ROUND");
 
     var prevPrompt = await generateInitialPrompt(gameId.value, round);
+    initialPrompt = prevPrompt;
     var prevImageURL = await generateInitialImage(gameId.value, prevPrompt, round);
     var prevImage = await getNextImage(gameId.value, prevImageURL);
 
@@ -570,23 +579,33 @@ async function handleRoundEnd(round: number) {
   await sendAIMessage(gameId.value, "Summary for round " + (round) + ":", "", round);
   await delay(2000)
   var winner = ""
-  var maxPts = 0
   for (var key in players.value) {
-    const pts = Math.random() * 500 - 0
-    if (pts > maxPts) {
-      winner = players.value[key].name
-      maxPts = pts
-    }
-    await sendAIMessage(gameId.value, players.value[key].name + " earned " + (pts) + " points!", "", round);
+    const prompt = aiMessages.value.filter((message) => message.roundNum == round && message.sentBy == key)[0].text;
+    var pts = await rateCreativity(initialPrompt, prompt) + await rateCloseNess(initialPrompt, prompt); //TODO: add on task verify check shit
+    indivTasks[key].array.forEach(async element => { pts += await executeVerification(element.id, initialPrompt, prompt)});
+    playersToPoints[key] += pts;
+    await sendAIMessage(gameId.value, players.value[key].name + " is now on " + (playersToPoints[key]) + " points!", "", round);
     await delay(2000)
   }
+  
+}
+
+async function handleGameEnd(round) {
+  
+  var maxPoints : Number = 0
+  let winner = "";
+  for (let key in playersToPoints) {
+    if (playersToPoints[key] > maxPoints) {
+      winner = players.value[key].name
+      maxPoints = playersToPoints[key]
+    }
+  }
+
+  
   await sendAIMessage(gameId.value, "So the winner was.....", "", round);
   await delay(1000)
   await sendAIMessage(gameId.value, winner + "! Congratulations!", "", round);
   await delay(5000)
-}
-
-async function handleGameEnd(round) {
   await sendAIMessage(gameId.value, "The game has ended!", "", round);
   await delay(1000)
   await sendAIMessage(gameId.value, "Thank you all for coming!", "", round);
