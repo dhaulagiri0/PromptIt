@@ -53,7 +53,7 @@
               <br>
               <!--TODO: Change colour to actual yellow-->
               <h3 class="text-grapefruit">Individual Tasks:</h3>
-              <div v-if="user != null" v-for="task in indivTasks[user.uid]" 
+              <div v-if="user != null && indivTasks != undefined" v-for="task in indivTasks[user.uid]" 
                 :key="indivTasks">
                 <p>{{ task["description"] }}</p>
               </div>
@@ -100,8 +100,8 @@ function delay(ms: number) {
 }
 
 onMounted(async () => {
-  // wait 10 seconds 
-  await delay(5000);
+  // wait 10 seconds
+  await delay(20000);
   // push to game page
   router.push("/game/" + gameId.value)
 })

@@ -105,6 +105,9 @@ export default function() {
       q,
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
+          console.log("change doc logs")
+          console.log(change.doc)
+          console.log(change.doc.data())
           gameStore.updateState(change.doc.data());
           if (user["uid"] == hostId.value) {
             const players = change.doc.data()["players"]
