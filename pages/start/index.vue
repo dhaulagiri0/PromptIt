@@ -88,8 +88,6 @@ onBeforeMount(async () => {
     }
 
     const gameSnap = await checkGame(gameId.value)
-    console.log(gameId.value)
-    console.log(gameSnap)
     if (!gameSnap) {
       goBack();
     }
