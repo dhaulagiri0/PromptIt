@@ -84,8 +84,8 @@ export default function() {
           },
         ],
         cfg_scale: 7,
-        height: 512,
-        width: 512,
+        height: 384,
+        width: 640,
         steps: 20,
         samples: 1,
       }),
@@ -122,8 +122,9 @@ export default function() {
   }
 
   async function generateNextImage(
-    gameId: String, imagePrompt: string, roundNum: number, userID
+    gameId: string, imagePrompt: string, roundNum: number, userID: string
   ) {
+    console.log(gameId, imagePrompt, roundNum, userID);
     console.log("generateNextImage", imagePrompt)
     const options = {
       method: 'POST',
@@ -139,8 +140,8 @@ export default function() {
           },
         ],
         cfg_scale: 7,
-        height: 512,
-        width: 512,
+        height: 384,
+        width: 640,
         steps: 20,
         samples: 1,
       }),

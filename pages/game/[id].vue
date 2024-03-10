@@ -521,6 +521,7 @@ async function handleGameHost() {
         // slight delay to make sure the message is updated
         await delay(5000);
         prevPrompt = lastMessage.value;
+        console.log("KEY", key)
         prevImageURL = await generateNextImage(gameId.value, prevPrompt, round, key);
         prevImage = await getNextImage(gameId.value, prevImageURL);
         await sendAIMessage(gameId.value, getUserNameFromId(key) + " wrote a description that generated the following image: ", prevImage.toString(), round);
