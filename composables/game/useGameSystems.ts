@@ -273,5 +273,8 @@ export default function() {
     generateInitialPrompt,
     generateInitialImage,
     generateNextImage,
+    rateCreativity,
+    rateCloseNess,
+    addPromptToFirebase
   };
 }
